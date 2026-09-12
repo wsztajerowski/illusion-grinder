@@ -1,7 +1,7 @@
 # slides — the Slidev presentation
 
-"From False Confidence to Systematic Proof: a story about testing Concurrent
-Algorithms in Java" — built with [Slidev](https://sli.dev).
+"The Illusion Grinder: Four Circles of Testing Hell for Concurrent Java" —
+built with [Slidev](https://sli.dev).
 
 Everything lives in a single deck, `slides.md`, with custom styling in
 `style.css` and images under `src/resources/`. Icons come from
@@ -57,4 +57,4 @@ for the jcstress tables and JMH numbers.
 
 * `slides/dist/` and `slides/node_modules/` are git-ignored, as are exported
   PDFs (`*.pdf`).
-* The Polish-language talk abstract is in [`../docs/abstract.md`](../docs/abstract.md).
+* The Polish-language talk abstract is in [`../docs/abstract-pl.md`](../docs/abstract-pl.md).

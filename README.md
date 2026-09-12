@@ -1,7 +1,7 @@
 # Systematic Concurrency Testing
 
-Demo repository for the talk **"From False Confidence to Systematic Proof: a
-story about testing concurrent algorithms in Java"** — four implementations of
+Demo repository for the talk **"The Illusion Grinder: Four Circles of Testing
+Hell for Concurrent Java"** — four implementations of
 Lamport's circular buffer, two of them deliberately broken, all four passing
 CI, put through four progressively more brutal layers of testing until each bug
 is dragged into the light.
@@ -256,7 +256,7 @@ npm run export   # PDF
 ```
 
 Details: [`slides/README.md`](slides). The Polish-language talk abstract is in
-[`docs/abstract.md`](docs/abstract.md).
+[`docs/abstract-pl.md`](docs/abstract-pl.md).
 
 ## Recorded results
 

@@ -82,4 +82,4 @@ Fray and jcstress are complementary: Fray explores *schedules* (all sequentially
 
 ### Documentation
 
-Each module has a `README.md` covering what it demonstrates and the commands to run it; the root `README.md` is the entry point. `docs/abstract.md` holds the (Polish) talk abstract. `demos/results/` holds recorded Fray schedules, jcstress HTML reports and JMH JSON output copied out of git-ignored build directories.
+Each module has a `README.md` covering what it demonstrates and the commands to run it; the root `README.md` is the entry point. `docs/abstract-pl.md` holds the Polish talk abstract and `docs/abstract-en.md` the English one. `demos/results/` holds recorded Fray schedules, jcstress HTML reports and JMH JSON output copied out of git-ignored build directories.

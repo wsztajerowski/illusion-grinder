@@ -1,6 +1,6 @@
 ---
 theme: default
-title: "From False Confidence to Systematic Proof: a story about testing Concurrent Algorithms in Java"
+title: "The Illusion Grinder: Four Circles of Testing Hell for Concurrent Java"
 info: |
   A journey through Lamport's Circular Buffer using JUnit, Fray, jcstress, and JMH.
   Each tool asks a fundamentally different question about correctness.
@@ -17,11 +17,10 @@ class: text-center cover-slide
 
 <div class="cover-eyebrow"><mdi-fire-alert class="ico-red" /> A Concurrency Horror Story</div>
 
-# From False Confidence<br>to Systematic Proof
+# The Illusion Grinder
 
 <p class="cover-subtitle">
-Or: how to put your Java code through<br>
-<em>four circles of testing hell</em> — and find out which one it survives.
+<em>Four circles of testing hell for concurrent Java</em>
 </p>
 
 <div class="cover-tools-row">
@@ -1008,5 +1007,5 @@ Now go look at your "well-tested" concurrent code.<br>
 <br>
 
 <span class="footer-title">
-From False Confidence to Systematic Proof
+The Illusion Grinder - Four circles of testing hell for concurrent Java
 </span>
