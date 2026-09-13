@@ -1,4 +1,4 @@
-package pl.wsztajerowski.demo.lamport.jcstress;
+package pl.wsztajerowski.demo.lamport.jcstress.passing;
 
 import org.openjdk.jcstress.annotations.Actor;
 import org.openjdk.jcstress.annotations.JCStressTest;

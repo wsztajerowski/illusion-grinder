@@ -22,7 +22,7 @@
  </style>
 </head>
 <body>
-<h1>pl.wsztajerowski.demo.lamport.jcstress.VolatileLamportBufferOfferPollStress</h1>
+<h1>pl.wsztajerowski.demo.lamport.jcstress.passing.SpuriousWakeupLamportBufferStress</h1>
 <h3>Description and references</h3>
 <p>null</p>
 <h3>Environment</h3>
@@ -69,7 +69,7 @@
 </tr>
 <tr>
 <td nowrap>os.version</td>
-<td nowrap>15.7.4</td>
+<td nowrap>15.7.9</td>
 </tr>
 </table>
 <h3>Results</h3>
@@ -79,21 +79,18 @@
 <th>Scheduling Class</th>
 <th>Java Options</th>
 <th>Status</th>
-<th colspan=2>Observed States</th>
+<th colspan=1>Observed States</th>
 </tr>
 <tr>
 <th colspan=4></th>
-<th nowrap align='center'>-1</th>
 <th nowrap align='center'>42</th>
 </tr>
 <tr>
 <td colspan=4></td>
 <td>Acceptable</td>
-<td>Acceptable</td>
 </tr>
 <tr>
 <td colspan=4></td>
-<td>Poll ran before offer.</td>
 <td>Poll observed offered value.</td>
 </tr>
 <tr>
@@ -107,8 +104,7 @@
 <td        valign=top width=10>
 </td>
 <td align='center' bgColor='green '>OK</td>
-<td align='right' width='50.0%' bgColor=#00ff00>325554</td>
-<td align='right' width='50.0%' bgColor=#00ff00>10076257</td>
+<td align='right' width='100.0%' bgColor=#00ff00>10903571</td>
 </tr>
 <tr>
 <td nowrap valign=top width=10><pre>split
@@ -121,8 +117,7 @@
 <td        valign=top width=10>
 </td>
 <td align='center' bgColor='green '>OK</td>
-<td align='right' width='50.0%' bgColor=#00ff00>162673</td>
-<td align='right' width='50.0%' bgColor=#00ff00>6429858</td>
+<td align='right' width='100.0%' bgColor=#00ff00>9818131</td>
 </tr>
 <tr>
 <td nowrap valign=top width=10><pre>split
@@ -135,8 +130,7 @@
 <td        valign=top width=10>
 </td>
 <td align='center' bgColor='green '>OK</td>
-<td align='right' width='50.0%' bgColor=#00ff00>182347</td>
-<td align='right' width='50.0%' bgColor=#00ff00>10291144</td>
+<td align='right' width='100.0%' bgColor=#00ff00>10453011</td>
 </tr>
 <tr>
 <td nowrap valign=top width=10><pre>split
@@ -147,11 +141,10 @@
     consumer: package group free, core group free
 </pre></td>
 <td        valign=top width=10>
-<pre>[-XX:+StressLCM, -XX:+StressGCM, -XX:+StressIGVN, -XX:+StressCCP, -XX:StressSeed=1455374497]</pre>
+<pre>[-XX:+StressLCM, -XX:+StressGCM, -XX:+StressIGVN, -XX:+StressCCP, -XX:StressSeed=1553179697]</pre>
 </td>
 <td align='center' bgColor='green '>OK</td>
-<td align='right' width='50.0%' bgColor=#00ff00>220775</td>
-<td align='right' width='50.0%' bgColor=#00ff00>10826156</td>
+<td align='right' width='100.0%' bgColor=#00ff00>10760211</td>
 </tr>
 <tr>
 <td nowrap valign=top width=10><pre>split
@@ -162,11 +155,10 @@
     consumer: package group free, core group free
 </pre></td>
 <td        valign=top width=10>
-<pre>[-XX:+StressLCM, -XX:+StressGCM, -XX:+StressIGVN, -XX:+StressCCP, -XX:StressSeed=157653033]</pre>
+<pre>[-XX:+StressLCM, -XX:+StressGCM, -XX:+StressIGVN, -XX:+StressCCP, -XX:StressSeed=1929942196]</pre>
 </td>
 <td align='center' bgColor='green '>OK</td>
-<td align='right' width='50.0%' bgColor=#00ff00>197690</td>
-<td align='right' width='50.0%' bgColor=#00ff00>10337241</td>
+<td align='right' width='100.0%' bgColor=#00ff00>11528211</td>
 </tr>
 <tr>
 <td nowrap valign=top width=10><pre>split
@@ -177,11 +169,10 @@
     consumer: package group free, core group free
 </pre></td>
 <td        valign=top width=10>
-<pre>[-XX:+StressLCM, -XX:+StressGCM, -XX:+StressIGVN, -XX:+StressCCP, -XX:StressSeed=1962467118]</pre>
+<pre>[-XX:+StressLCM, -XX:+StressGCM, -XX:+StressIGVN, -XX:+StressCCP, -XX:StressSeed=2129327369]</pre>
 </td>
 <td align='center' bgColor='green '>OK</td>
-<td align='right' width='50.0%' bgColor=#00ff00>208799</td>
-<td align='right' width='50.0%' bgColor=#00ff00>11524212</td>
+<td align='right' width='100.0%' bgColor=#00ff00>10432531</td>
 </tr>
 <tr>
 <td nowrap valign=top width=10><pre>split
@@ -192,11 +183,10 @@
     consumer: package group free, core group free
 </pre></td>
 <td        valign=top width=10>
-<pre>[-XX:+StressLCM, -XX:+StressGCM, -XX:+StressIGVN, -XX:+StressCCP, -XX:StressSeed=316594875]</pre>
+<pre>[-XX:+StressLCM, -XX:+StressGCM, -XX:+StressIGVN, -XX:+StressCCP, -XX:StressSeed=257668498]</pre>
 </td>
 <td align='center' bgColor='green '>OK</td>
-<td align='right' width='50.0%' bgColor=#00ff00>163000</td>
-<td align='right' width='50.0%' bgColor=#00ff00>6706011</td>
+<td align='right' width='100.0%' bgColor=#00ff00>12613651</td>
 </tr>
 <tr>
 <td nowrap valign=top width=10><pre>split
@@ -207,11 +197,10 @@
     consumer: package group free, core group free
 </pre></td>
 <td        valign=top width=10>
-<pre>[-XX:+StressLCM, -XX:+StressGCM, -XX:+StressIGVN, -XX:+StressCCP, -XX:StressSeed=962025079]</pre>
+<pre>[-XX:+StressLCM, -XX:+StressGCM, -XX:+StressIGVN, -XX:+StressCCP, -XX:StressSeed=375349959]</pre>
 </td>
 <td align='center' bgColor='green '>OK</td>
-<td align='right' width='50.0%' bgColor=#00ff00>241317</td>
-<td align='right' width='50.0%' bgColor=#00ff00>10539374</td>
+<td align='right' width='100.0%' bgColor=#00ff00>11773971</td>
 </tr>
 <tr>
 <td nowrap valign=top width=10><pre>split
@@ -224,8 +213,7 @@
 <td        valign=top width=10>
 </td>
 <td align='center' bgColor='green '>OK</td>
-<td align='right' width='50.0%' bgColor=#00ff00>21822966</td>
-<td align='right' width='50.0%' bgColor=#00ff00>1317405</td>
+<td align='right' width='100.0%' bgColor=#00ff00>13269011</td>
 </tr>
 <tr>
 <td nowrap valign=top width=10><pre>split
@@ -238,8 +226,7 @@
 <td        valign=top width=10>
 </td>
 <td align='center' bgColor='green '>OK</td>
-<td align='right' width='50.0%' bgColor=#00ff00>15101284</td>
-<td align='right' width='50.0%' bgColor=#00ff00>23194287</td>
+<td align='right' width='100.0%' bgColor=#00ff00>13637651</td>
 </tr>
 <tr>
 <td nowrap valign=top width=10><pre>split
@@ -252,8 +239,7 @@
 <td        valign=top width=10>
 </td>
 <td align='center' bgColor='green '>OK</td>
-<td align='right' width='50.0%' bgColor=#00ff00>8277252</td>
-<td align='right' width='50.0%' bgColor=#00ff00>29557519</td>
+<td align='right' width='100.0%' bgColor=#00ff00>15081491</td>
 </tr>
 <tr>
 <td nowrap valign=top width=10><pre>split
@@ -264,11 +250,10 @@
     consumer: package group free, core group free
 </pre></td>
 <td        valign=top width=10>
-<pre>[-XX:+StressLCM, -XX:+StressGCM, -XX:+StressIGVN, -XX:+StressCCP, -XX:StressSeed=1567084860]</pre>
+<pre>[-XX:+StressLCM, -XX:+StressGCM, -XX:+StressIGVN, -XX:+StressCCP, -XX:StressSeed=1593825637]</pre>
 </td>
 <td align='center' bgColor='green '>OK</td>
-<td align='right' width='50.0%' bgColor=#00ff00>5495522</td>
-<td align='right' width='50.0%' bgColor=#00ff00>27393329</td>
+<td align='right' width='100.0%' bgColor=#00ff00>14968851</td>
 </tr>
 <tr>
 <td nowrap valign=top width=10><pre>split
@@ -279,11 +264,10 @@
     consumer: package group free, core group free
 </pre></td>
 <td        valign=top width=10>
-<pre>[-XX:+StressLCM, -XX:+StressGCM, -XX:+StressIGVN, -XX:+StressCCP, -XX:StressSeed=1890399502]</pre>
+<pre>[-XX:+StressLCM, -XX:+StressGCM, -XX:+StressIGVN, -XX:+StressCCP, -XX:StressSeed=1680691242]</pre>
 </td>
 <td align='center' bgColor='green '>OK</td>
-<td align='right' width='50.0%' bgColor=#00ff00>6731710</td>
-<td align='right' width='50.0%' bgColor=#00ff00>28655701</td>
+<td align='right' width='100.0%' bgColor=#00ff00>12521491</td>
 </tr>
 <tr>
 <td nowrap valign=top width=10><pre>split
@@ -294,11 +278,10 @@
     consumer: package group free, core group free
 </pre></td>
 <td        valign=top width=10>
-<pre>[-XX:+StressLCM, -XX:+StressGCM, -XX:+StressIGVN, -XX:+StressCCP, -XX:StressSeed=1963193793]</pre>
+<pre>[-XX:+StressLCM, -XX:+StressGCM, -XX:+StressIGVN, -XX:+StressCCP, -XX:StressSeed=22258395]</pre>
 </td>
 <td align='center' bgColor='green '>OK</td>
-<td align='right' width='50.0%' bgColor=#00ff00>6206349</td>
-<td align='right' width='50.0%' bgColor=#00ff00>24777862</td>
+<td align='right' width='100.0%' bgColor=#00ff00>18911251</td>
 </tr>
 <tr>
 <td nowrap valign=top width=10><pre>split
@@ -309,11 +292,10 @@
     consumer: package group free, core group free
 </pre></td>
 <td        valign=top width=10>
-<pre>[-XX:+StressLCM, -XX:+StressGCM, -XX:+StressIGVN, -XX:+StressCCP, -XX:StressSeed=2027843756]</pre>
+<pre>[-XX:+StressLCM, -XX:+StressGCM, -XX:+StressIGVN, -XX:+StressCCP, -XX:StressSeed=241002003]</pre>
 </td>
 <td align='center' bgColor='green '>OK</td>
-<td align='right' width='50.0%' bgColor=#00ff00>7142338</td>
-<td align='right' width='50.0%' bgColor=#00ff00>25603153</td>
+<td align='right' width='100.0%' bgColor=#00ff00>15050771</td>
 </tr>
 <tr>
 <td nowrap valign=top width=10><pre>split
@@ -324,11 +306,10 @@
     consumer: package group free, core group free
 </pre></td>
 <td        valign=top width=10>
-<pre>[-XX:+StressLCM, -XX:+StressGCM, -XX:+StressIGVN, -XX:+StressCCP, -XX:StressSeed=2080770574]</pre>
+<pre>[-XX:+StressLCM, -XX:+StressGCM, -XX:+StressIGVN, -XX:+StressCCP, -XX:StressSeed=541865429]</pre>
 </td>
 <td align='center' bgColor='green '>OK</td>
-<td align='right' width='50.0%' bgColor=#00ff00>7362013</td>
-<td align='right' width='50.0%' bgColor=#00ff00>25342518</td>
+<td align='right' width='100.0%' bgColor=#00ff00>15357971</td>
 </tr>
 <tr>
 <td nowrap valign=top width=10><pre>split
@@ -341,8 +322,7 @@
 <td        valign=top width=10>
 </td>
 <td align='center' bgColor='green '>OK</td>
-<td align='right' width='50.0%' bgColor=#00ff00>19699049</td>
-<td align='right' width='50.0%' bgColor=#00ff00>533162</td>
+<td align='right' width='100.0%' bgColor=#00ff00>11190291</td>
 </tr>
 <tr>
 <td nowrap valign=top width=10><pre>split
@@ -353,11 +333,10 @@
     consumer: package group free, core group free
 </pre></td>
 <td        valign=top width=10>
-<pre>[-XX:+StressLCM, -XX:+StressGCM, -XX:+StressIGVN, -XX:+StressCCP, -XX:StressSeed=1045496260]</pre>
+<pre>[-XX:+StressLCM, -XX:+StressGCM, -XX:+StressIGVN, -XX:+StressCCP, -XX:StressSeed=1138907868]</pre>
 </td>
 <td align='center' bgColor='green '>OK</td>
-<td align='right' width='50.0%' bgColor=#00ff00>11731661</td>
-<td align='right' width='50.0%' bgColor=#00ff00>400710</td>
+<td align='right' width='100.0%' bgColor=#00ff00>10207251</td>
 </tr>
 <tr>
 <td nowrap valign=top width=10><pre>split
@@ -368,11 +347,10 @@
     consumer: package group free, core group free
 </pre></td>
 <td        valign=top width=10>
-<pre>[-XX:+StressLCM, -XX:+StressGCM, -XX:+StressIGVN, -XX:+StressCCP, -XX:StressSeed=1564282643]</pre>
+<pre>[-XX:+StressLCM, -XX:+StressGCM, -XX:+StressIGVN, -XX:+StressCCP, -XX:StressSeed=1338648032]</pre>
 </td>
 <td align='center' bgColor='green '>OK</td>
-<td align='right' width='50.0%' bgColor=#00ff00>17239711</td>
-<td align='right' width='50.0%' bgColor=#00ff00>565620</td>
+<td align='right' width='100.0%' bgColor=#00ff00>10770451</td>
 </tr>
 <tr>
 <td nowrap valign=top width=10><pre>split
@@ -383,11 +361,10 @@
     consumer: package group free, core group free
 </pre></td>
 <td        valign=top width=10>
-<pre>[-XX:+StressLCM, -XX:+StressGCM, -XX:+StressIGVN, -XX:+StressCCP, -XX:StressSeed=1790054586]</pre>
+<pre>[-XX:+StressLCM, -XX:+StressGCM, -XX:+StressIGVN, -XX:+StressCCP, -XX:StressSeed=1473401137]</pre>
 </td>
 <td align='center' bgColor='green '>OK</td>
-<td align='right' width='50.0%' bgColor=#00ff00>18796634</td>
-<td align='right' width='50.0%' bgColor=#00ff00>513977</td>
+<td align='right' width='100.0%' bgColor=#00ff00>9091091</td>
 </tr>
 <tr>
 <td nowrap valign=top width=10><pre>split
@@ -398,11 +375,10 @@
     consumer: package group free, core group free
 </pre></td>
 <td        valign=top width=10>
-<pre>[-XX:+StressLCM, -XX:+StressGCM, -XX:+StressIGVN, -XX:+StressCCP, -XX:StressSeed=1936974653]</pre>
+<pre>[-XX:+StressLCM, -XX:+StressGCM, -XX:+StressIGVN, -XX:+StressCCP, -XX:StressSeed=739645603]</pre>
 </td>
 <td align='center' bgColor='green '>OK</td>
-<td align='right' width='50.0%' bgColor=#00ff00>12144617</td>
-<td align='right' width='50.0%' bgColor=#00ff00>448554</td>
+<td align='right' width='100.0%' bgColor=#00ff00>13023251</td>
 </tr>
 <tr>
 <td nowrap valign=top width=10><pre>split
@@ -413,11 +389,10 @@
     consumer: package group free, core group free
 </pre></td>
 <td        valign=top width=10>
-<pre>[-XX:+StressLCM, -XX:+StressGCM, -XX:+StressIGVN, -XX:+StressCCP, -XX:StressSeed=561002118]</pre>
+<pre>[-XX:+StressLCM, -XX:+StressGCM, -XX:+StressIGVN, -XX:+StressCCP, -XX:StressSeed=973040856]</pre>
 </td>
 <td align='center' bgColor='green '>OK</td>
-<td align='right' width='50.0%' bgColor=#00ff00>19323546</td>
-<td align='right' width='50.0%' bgColor=#00ff00>529785</td>
+<td align='right' width='100.0%' bgColor=#00ff00>10688531</td>
 </tr>
 <tr>
 <td nowrap valign=top width=10><pre>split
@@ -430,8 +405,7 @@
 <td        valign=top width=10>
 </td>
 <td align='center' bgColor='green '>OK</td>
-<td align='right' width='50.0%' bgColor=#00ff00>36268364</td>
-<td align='right' width='50.0%' bgColor=#00ff00>9912007</td>
+<td align='right' width='100.0%' bgColor=#00ff00>16115731</td>
 </tr>
 <tr>
 <td nowrap valign=top width=10><pre>split
@@ -442,11 +416,10 @@
     consumer: package group free, core group free
 </pre></td>
 <td        valign=top width=10>
-<pre>[-XX:+StressLCM, -XX:+StressGCM, -XX:+StressIGVN, -XX:+StressCCP, -XX:StressSeed=1125321139]</pre>
+<pre>[-XX:+StressLCM, -XX:+StressGCM, -XX:+StressIGVN, -XX:+StressCCP, -XX:StressSeed=1570922328]</pre>
 </td>
 <td align='center' bgColor='green '>OK</td>
-<td align='right' width='50.0%' bgColor=#00ff00>30811074</td>
-<td align='right' width='50.0%' bgColor=#00ff00>10669137</td>
+<td align='right' width='100.0%' bgColor=#00ff00>11528211</td>
 </tr>
 <tr>
 <td nowrap valign=top width=10><pre>split
@@ -457,11 +430,10 @@
     consumer: package group free, core group free
 </pre></td>
 <td        valign=top width=10>
-<pre>[-XX:+StressLCM, -XX:+StressGCM, -XX:+StressIGVN, -XX:+StressCCP, -XX:StressSeed=1260846593]</pre>
+<pre>[-XX:+StressLCM, -XX:+StressGCM, -XX:+StressIGVN, -XX:+StressCCP, -XX:StressSeed=1803799889]</pre>
 </td>
 <td align='center' bgColor='green '>OK</td>
-<td align='right' width='50.0%' bgColor=#00ff00>30074587</td>
-<td align='right' width='50.0%' bgColor=#00ff00>10340664</td>
+<td align='right' width='100.0%' bgColor=#00ff00>12081171</td>
 </tr>
 <tr>
 <td nowrap valign=top width=10><pre>split
@@ -472,11 +444,10 @@
     consumer: package group free, core group free
 </pre></td>
 <td        valign=top width=10>
-<pre>[-XX:+StressLCM, -XX:+StressGCM, -XX:+StressIGVN, -XX:+StressCCP, -XX:StressSeed=1599580070]</pre>
+<pre>[-XX:+StressLCM, -XX:+StressGCM, -XX:+StressIGVN, -XX:+StressCCP, -XX:StressSeed=2018913405]</pre>
 </td>
 <td align='center' bgColor='green '>OK</td>
-<td align='right' width='50.0%' bgColor=#00ff00>31879730</td>
-<td align='right' width='50.0%' bgColor=#00ff00>7982561</td>
+<td align='right' width='100.0%' bgColor=#00ff00>18972691</td>
 </tr>
 <tr>
 <td nowrap valign=top width=10><pre>split
@@ -487,11 +458,10 @@
     consumer: package group free, core group free
 </pre></td>
 <td        valign=top width=10>
-<pre>[-XX:+StressLCM, -XX:+StressGCM, -XX:+StressIGVN, -XX:+StressCCP, -XX:StressSeed=571435199]</pre>
+<pre>[-XX:+StressLCM, -XX:+StressGCM, -XX:+StressIGVN, -XX:+StressCCP, -XX:StressSeed=460409412]</pre>
 </td>
 <td align='center' bgColor='green '>OK</td>
-<td align='right' width='50.0%' bgColor=#00ff00>33073974</td>
-<td align='right' width='50.0%' bgColor=#00ff00>10331357</td>
+<td align='right' width='100.0%' bgColor=#00ff00>12757011</td>
 </tr>
 <tr>
 <td nowrap valign=top width=10><pre>split
@@ -502,11 +472,10 @@
     consumer: package group free, core group free
 </pre></td>
 <td        valign=top width=10>
-<pre>[-XX:+StressLCM, -XX:+StressGCM, -XX:+StressIGVN, -XX:+StressCCP, -XX:StressSeed=901322435]</pre>
+<pre>[-XX:+StressLCM, -XX:+StressGCM, -XX:+StressIGVN, -XX:+StressCCP, -XX:StressSeed=531472799]</pre>
 </td>
 <td align='center' bgColor='green '>OK</td>
-<td align='right' width='50.0%' bgColor=#00ff00>31480992</td>
-<td align='right' width='50.0%' bgColor=#00ff00>10173299</td>
+<td align='right' width='100.0%' bgColor=#00ff00>14620691</td>
 </tr>
 <tr>
 <td nowrap valign=top width=10><pre>split
@@ -519,8 +488,7 @@
 <td        valign=top width=10>
 </td>
 <td align='center' bgColor='green '>OK</td>
-<td align='right' width='50.0%' bgColor=#00ff00>20868936</td>
-<td align='right' width='50.0%' bgColor=#00ff00>14221515</td>
+<td align='right' width='100.0%' bgColor=#00ff00>18941971</td>
 </tr>
 <tr>
 <td nowrap valign=top width=10><pre>split
@@ -531,11 +499,10 @@
     consumer: package group free, core group free
 </pre></td>
 <td        valign=top width=10>
-<pre>[-XX:+StressLCM, -XX:+StressGCM, -XX:+StressIGVN, -XX:+StressCCP, -XX:StressSeed=1243892510]</pre>
+<pre>[-XX:+StressLCM, -XX:+StressGCM, -XX:+StressIGVN, -XX:+StressCCP, -XX:StressSeed=1488076595]</pre>
 </td>
 <td align='center' bgColor='green '>OK</td>
-<td align='right' width='50.0%' bgColor=#00ff00>28638741</td>
-<td align='right' width='50.0%' bgColor=#00ff00>19671550</td>
+<td align='right' width='100.0%' bgColor=#00ff00>19607571</td>
 </tr>
 <tr>
 <td nowrap valign=top width=10><pre>split
@@ -546,11 +513,10 @@
     consumer: package group free, core group free
 </pre></td>
 <td        valign=top width=10>
-<pre>[-XX:+StressLCM, -XX:+StressGCM, -XX:+StressIGVN, -XX:+StressCCP, -XX:StressSeed=1557549563]</pre>
+<pre>[-XX:+StressLCM, -XX:+StressGCM, -XX:+StressIGVN, -XX:+StressCCP, -XX:StressSeed=1602760547]</pre>
 </td>
 <td align='center' bgColor='green '>OK</td>
-<td align='right' width='50.0%' bgColor=#00ff00>29052817</td>
-<td align='right' width='50.0%' bgColor=#00ff00>16810114</td>
+<td align='right' width='100.0%' bgColor=#00ff00>19873811</td>
 </tr>
 <tr>
 <td nowrap valign=top width=10><pre>split
@@ -561,11 +527,10 @@
     consumer: package group free, core group free
 </pre></td>
 <td        valign=top width=10>
-<pre>[-XX:+StressLCM, -XX:+StressGCM, -XX:+StressIGVN, -XX:+StressCCP, -XX:StressSeed=21455827]</pre>
+<pre>[-XX:+StressLCM, -XX:+StressGCM, -XX:+StressIGVN, -XX:+StressCCP, -XX:StressSeed=1847614764]</pre>
 </td>
 <td align='center' bgColor='green '>OK</td>
-<td align='right' width='50.0%' bgColor=#00ff00>29463170</td>
-<td align='right' width='50.0%' bgColor=#00ff00>19144081</td>
+<td align='right' width='100.0%' bgColor=#00ff00>21102611</td>
 </tr>
 <tr>
 <td nowrap valign=top width=10><pre>split
@@ -576,11 +541,10 @@
     consumer: package group free, core group free
 </pre></td>
 <td        valign=top width=10>
-<pre>[-XX:+StressLCM, -XX:+StressGCM, -XX:+StressIGVN, -XX:+StressCCP, -XX:StressSeed=248162204]</pre>
+<pre>[-XX:+StressLCM, -XX:+StressGCM, -XX:+StressIGVN, -XX:+StressCCP, -XX:StressSeed=362096890]</pre>
 </td>
 <td align='center' bgColor='green '>OK</td>
-<td align='right' width='50.0%' bgColor=#00ff00>28374004</td>
-<td align='right' width='50.0%' bgColor=#00ff00>20110367</td>
+<td align='right' width='100.0%' bgColor=#00ff00>17559571</td>
 </tr>
 <tr>
 <td nowrap valign=top width=10><pre>split
@@ -591,11 +555,10 @@
     consumer: package group free, core group free
 </pre></td>
 <td        valign=top width=10>
-<pre>[-XX:+StressLCM, -XX:+StressGCM, -XX:+StressIGVN, -XX:+StressCCP, -XX:StressSeed=616811852]</pre>
+<pre>[-XX:+StressLCM, -XX:+StressGCM, -XX:+StressIGVN, -XX:+StressCCP, -XX:StressSeed=952427514]</pre>
 </td>
 <td align='center' bgColor='green '>OK</td>
-<td align='right' width='50.0%' bgColor=#00ff00>46547056</td>
-<td align='right' width='50.0%' bgColor=#00ff00>26144675</td>
+<td align='right' width='100.0%' bgColor=#00ff00>17877011</td>
 </tr>
 </table>
 <h3>Messages</h3>

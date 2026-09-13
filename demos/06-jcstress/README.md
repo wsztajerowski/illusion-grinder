@@ -41,12 +41,13 @@ public class VolatileSpscLamportBufferJcstressTest {
 | `VolatileSpscLamportBufferJcstressTest` | `VolatileLamportBuffer` | SPSC baseline — must never lose an element |
 | `TwoProducersVolatileBufferStress` | `VolatileLamportBuffer` | TOCTOU lost update when an SPSC buffer gets two producers |
 | `SingleThreadLamportBufferMultiOpStress` | `NonVolatileLamportBuffer` | duplicate reads, lost writes, FIFO violations from missing `volatile` |
-| `NonVolatileSpscLamportBufferJcstressTest` | `NonVolatileLamportBuffer` | the headline visibility bug — **currently disabled** (`@JCStressTest` commented out) because it fails by design |
+| `NonVolatileSpscLamportBufferJcstressTest` | `NonVolatileLamportBuffer` | the headline visibility bug — fails by design, so it runs in its own tolerated execution (see *How the module is built*) |
 | `LockBasedLamportBufferOfferPollStress` | `LockBasedLamportBuffer` | control sample — should be clean |
 | `FastPathLamportBufferStress` | `FastPathLamportBuffer` | the unlocked fast path under real contention |
 | `SpuriousWakeupLamportBufferStress` | `ConditionalLamportBuffer` | `if`-instead-of-`while` around `Condition.await()` |
+| `TwoConsumersFastPathBufferStress` | `FastPathLamportBuffer` | the same fast-path race Fray finds — two consumers, one element |
 
-Six tests run by default.
+Eight tests, all of them run.
 
 ## What a full run actually reports
 
@@ -55,23 +56,32 @@ x86_64, JDK 25):
 
 | Test | Verdicts observed |
 |---|---|
-| `TwoProducersVolatileBufferStress` | **Interesting** — lost update in 2,306,358,327 of 2,319,307,022 samples (99.4%) |
+| `TwoProducersVolatileBufferStress` | **Interesting** — lost update in 8,627,481 of 582,627,974 samples (1.48%), plus 3,015,531 spurious "full" rejections (0.51%) |
 | `SingleThreadLamportBufferMultiOpStress` | **Interesting** — `-1, 2`: first write invisible, second visible |
 | `VolatileSpscLamportBufferJcstressTest` | Acceptable only |
 | `LockBasedLamportBufferOfferPollStress` | Acceptable only |
-| `FastPathLamportBufferStress` | Acceptable only |
+| `FastPathLamportBufferStress` | Acceptable only — one consumer, so the race cannot occur |
 | `SpuriousWakeupLamportBufferStress` | Acceptable only |
+| `TwoConsumersFastPathBufferStress` | **Interesting** — NPE in 6,362,471 of 579,207,814 samples (1.10%) |
 
-Note the last two rows. jcstress ran the fast-path and spurious-wakeup buffers
-for billions of executions and never hit the window — while
-[Fray](../05-fray) found the fast-path NPE on its **4th** iteration and the
-spurious wakeup on its **1st**. Systematic exploration is not a slower version
-of stress testing; it answers a different question. Run both.
+Compare the two fast-path rows. `FastPathLamportBufferStress` runs a single
+consumer, so the race it is named after is unreachable — jcstress reported
+"acceptable" for a scenario that cannot fail. `TwoConsumersFastPathBufferStress`
+models the actual race and jcstress hits it at **1.10%**.
 
-## Reproducing the headline result
+So jcstress is not blind to this bug. But [Fray](../05-fray) found it on its
+**4th** iteration from an ordinary two-threaded test with an assertion, and
+handed back a replayable recording; jcstress needed a test shaped around the bug
+before it could see anything. The spurious wakeup has not been observed by any
+jcstress test here — hedged deliberately, since no test well-shaped for it has
+been written.
 
-Re-enable `NonVolatileSpscLamportBufferJcstressTest` by uncommenting its
-`@JCStressTest` annotation:
+Systematic exploration is not a slower version of stress testing. It asks less of
+you. Run both.
+
+## The headline result
+
+`NonVolatileSpscLamportBufferJcstressTest` runs on every `verify`:
 
 ```
    RESULT      SAMPLES     FREQ       EXPECT  DESCRIPTION
@@ -90,6 +100,13 @@ The archived HTML report for that run is checked in at
 — status `FAILED`, with the forbidden `1, 0, 0` state observed under several
 compilation modes (Interpreter, C1, C2, and C2 with `-XX:+StressLCM`/`StressGCM`).
 
+> That filename has no `edgecase` segment: the run predates the split of these
+> tests into `passing`/`edgecase` packages. It is kept under its original name
+> because it is the exact run the 35,222-sample figure and the slide screenshot
+> come from — a later run gives different counts. Every other report in that
+> directory carries the current package. (`05-fray` keeps a `FastTrack…`
+> recording for the same reason.)
+
 ## How the module is built
 
 * Tests live in **`src/main/java`**, not `src/test/java` — jcstress compiles them
@@ -98,7 +115,22 @@ compilation modes (Interpreter, C1, C2, and C2 with `-XX:+StressLCM`/`StressGCM`
 * `maven-shade-plugin` packages everything into a self-contained
   `target/jcstress.jar` with `org.openjdk.jcstress.Main` as its entry point.
 * `exec-maven-plugin` runs that jar in the **`integration-test`** phase, with the
-  `--add-opens` flags jcstress needs on modern JDKs.
+  `--add-opens` flags jcstress needs on modern JDKs — in **two** executions, split by package:
+  * `run-jcstress` — everything *not* under `jcstress.edgecase.` (`-t '^(?!.*\.edgecase\.).*'`).
+    Strict: a non-zero exit fails the build.
+  * `run-jcstress-expected-failures` — `jcstress.edgecase.` only (`-t '\.jcstress\.edgecase\.'`).
+    jcstress exits 1 when it observes a FORBIDDEN state, which for these tests *is* the expected
+    result, so `successCodes` tolerates it — here and nowhere else.
+
+  So the source tree is the configuration:
+
+  ```
+  jcstress/passing/    must pass — a failure here breaks the build
+  jcstress/edgecase/   intentionally broken — exit 1 is expected
+  ```
+
+  **Add a test by choosing its package. The pom never needs editing.** A test left in neither
+  package is picked up by the strict run, so it fails loudly instead of silently not running.
 
 Because the run is bound to `integration-test`, `verify` — not `test` — is the
 lifecycle goal that executes the stress tests.

@@ -44,10 +44,10 @@ Slidev extras once `npm run dev` is up:
 | Prologue | Green CI, production NPE — the problem statement |
 | Cast of characters | Lamport's circular buffer, four implementations, one interface |
 | Circle I — JUnit | Contract tests, and why they all pass |
-| Circle II — Fray | Systematic interleavings, deterministic replay, the blind spot |
-| Circle III — jcstress | Actors/outcomes, the missing-`volatile` result, Fray vs. jcstress |
+| Circle II — Fray | Schedule sampling (POS/PCT), two bugs found, deterministic replay, the blind spot |
+| Circle III — jcstress | Actors/outcomes, the missing-`volatile` result, TOCTOU, Fray vs. jcstress, why coverage is never proven |
 | Circle IV — JMH | Lock-free vs. lock-based throughput |
-| Epilogue | The testing pyramid, when to reach for which tool, three golden rules |
+| Epilogue | The testing pyramid, when to reach for which tool, what each circle costs, three golden rules |
 
 The code and output shown on the slides come from
 [`../demos`](../demos) — the recorded runs in `demos/results/` are the source

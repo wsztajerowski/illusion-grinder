@@ -100,6 +100,10 @@
                 <artifactId>exec-maven-plugin</artifactId>
                 <version>3.1.1</version>
                 <executions>
+                    <!-- Everything NOT under .jcstress.edgecase. — i.e. every test expected to
+                         pass. A non-zero exit here means a real regression, so the default strict
+                         exit-code check applies. A test that forgets its subpackage lands here and
+                         fails loudly rather than silently running nowhere. -->
                     <execution>
                         <id>run-jcstress</id>
                         <phase>integration-test</phase>
@@ -119,7 +123,42 @@
                                 <argument>${project.build.directory}/jcstress.jar</argument>
                                 <argument>-r</argument>
                                 <argument>${project.build.directory}/jcstress-results</argument>
+                                <argument>-t</argument>
+                                <argument>^(?!.*\.edgecase\.).*</argument>
                             </arguments>
+                        </configuration>
+                    </execution>
+                    <!-- Tests under .jcstress.edgecase. are intentionally broken demos: observing
+                         the FORBIDDEN outcome IS the point, and jcstress exits 1 when it does, so
+                         that exit code is tolerated here and nowhere else. Add a new failing demo by
+                         putting it in that package — no change to this pom. Read the report under
+                         target/jcstress-results-expected-failures. -->
+                    <execution>
+                        <id>run-jcstress-expected-failures</id>
+                        <phase>integration-test</phase>
+                        <goals>
+                            <goal>exec</goal>
+                        </goals>
+                        <configuration>
+                            <executable>java</executable>
+                            <arguments>
+                                <argument>--add-opens</argument>
+                                <argument>java.base/jdk.internal.misc=ALL-UNNAMED</argument>
+                                <argument>--add-opens</argument>
+                                <argument>java.base/java.lang=ALL-UNNAMED</argument>
+                                <argument>--add-opens</argument>
+                                <argument>java.base/sun.nio.ch=ALL-UNNAMED</argument>
+                                <argument>-jar</argument>
+                                <argument>${project.build.directory}/jcstress.jar</argument>
+                                <argument>-r</argument>
+                                <argument>${project.build.directory}/jcstress-results-expected-failures</argument>
+                                <argument>-t</argument>
+                                <argument>\.jcstress\.edgecase\.</argument>
+                            </arguments>
+                            <successCodes>
+                                <successCode>0</successCode>
+                                <successCode>1</successCode>
+                            </successCodes>
                         </configuration>
                     </execution>
                 </executions>

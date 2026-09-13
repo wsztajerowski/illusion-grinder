@@ -11,9 +11,9 @@ This is a presentation project demonstrating systematic concurrency testing in J
 ### Maven (demos)
 
 ```bash
-# Build all modules — ALWAYS pass -Dexec.skip=true unless you want the full
-# jcstress suite to run (it is bound to integration-test and -DskipTests does
-# NOT skip it; without the flag a build takes ~30 minutes instead of ~30s)
+# Build all modules — pass -Dexec.skip=true unless you want the jcstress suite
+# to run (it is bound to integration-test and -DskipTests does NOT skip it;
+# without the flag a build takes ~5 minutes instead of ~30s)
 mvn -f demos/pom.xml clean install -DskipTests -Dexec.skip=true
 
 # Run all unit tests
@@ -75,6 +75,12 @@ Fray and jcstress are complementary: Fray explores *schedules* (all sequentially
 - Java 25, Maven 3.9+
 - Fray 0.8.5 (agent wired in by `fray-plugins-maven`, `prepare-fray` goal, `initialize` phase)
 - jcstress 0.16 — tests live in `src/main/java`, shaded into `target/jcstress.jar`, run by `exec-maven-plugin` during `integration-test`
+- jcstress tests are split by **package**: `jcstress.passing.*` must pass, `jcstress.edgecase.*` is
+  intentionally broken. Two exec executions key off that — `run-jcstress` (everything not under
+  `.edgecase.`, strict: a failure breaks the build) and `run-jcstress-expected-failures`
+  (`.edgecase.` only, tolerating exit 1, because observing the FORBIDDEN outcome is the point).
+  Add a test by choosing its package; the pom needs no change. A test left outside both packages
+  is picked up by the strict run, so it fails loudly rather than silently not running.
 - JMH 1.37 — shaded into `target/benchmarks.jar`
 - Contract tests in `04-contract-tests` use `@MethodSource` over four implementations: 17 methods × 4 = 68 cases, all passing
 - Fray tests extend `AbstractSPSCLamportBufferFrayTest` or `AbstractMPMCLamportBufferFrayTest`; concrete subclasses supply a buffer factory. Tests under `fray/edgecase/` are `@Disabled` intentionally-failing demos

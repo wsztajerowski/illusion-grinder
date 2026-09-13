@@ -26,11 +26,12 @@
 <tr>
 <td>
 <p class="endResult failed">
-0%
+87%
 </p>
 <table width="100%" cellpadding="3" cellspacing="0">
-<tr><td width="100%" class="failedProgress">&nbsp;</td></tr>
-<tr><td nowrap><b>Overall pass rate:</b> 0/1&nbsp;</td></tr>
+<tr><td width="87%" class="passedProgress">&nbsp;</td></tr>
+<tr><td width="12%" class="failedProgress">&nbsp;</td></tr>
+<tr><td nowrap><b>Overall pass rate:</b> 7/8&nbsp;</td></tr>
 </table>
 <br>
 </td>
@@ -78,7 +79,7 @@
 </tr>
 <tr>
 <td nowrap>os.version</td>
-<td nowrap>15.7.4</td>
+<td nowrap>15.7.9</td>
 </tr>
 </table>
 </td>
@@ -89,7 +90,7 @@
 <p>Strong asserts were violated. Correct implementations should have no assert failures here.</p>
 <table cellspacing=0 cellpadding=3 width="100%">
 <tr class="cell2">
-<td>&nbsp;&nbsp;&nbsp;<a href="pl.wsztajerowski.demo.lamport.jcstress.NonVolatileSpscLamportBufferJcstressTest.html">pl.wsztajerowski.demo.lamport.jcstress.NonVolatileSpscLamportBufferJcstressTest</a></td>
+<td>&nbsp;&nbsp;&nbsp;<a href="pl.wsztajerowski.demo.lamport.jcstress.edgecase.NonVolatileSpscLamportBufferJcstressTest.html">pl.wsztajerowski.demo.lamport.jcstress.edgecase.NonVolatileSpscLamportBufferJcstressTest</a></td>
 <td>10<sup>8</sup></td><td class="failed">FAILED</td>
 <td class="interesting"></td>
 <td class="passed"></td>
@@ -108,17 +109,75 @@ None!
 <h3>INTERESTING tests</h3>
 <p>Some interesting behaviors observed. This is for the plain curiosity.</p>
 <table cellspacing=0 cellpadding=3 width="100%">
+<tr class="cell1">
+<td>&nbsp;&nbsp;&nbsp;<a href="pl.wsztajerowski.demo.lamport.jcstress.passing.SingleThreadLamportBufferMultiOpStress.html">pl.wsztajerowski.demo.lamport.jcstress.passing.SingleThreadLamportBufferMultiOpStress</a></td>
+<td>10<sup>8</sup></td><td class="passed">PASSED</td>
+<td class="interesting">INTERESTING</td>
+<td class="passed"></td>
+</tr>
+<tr class="cell2">
+<td>&nbsp;&nbsp;&nbsp;<a href="pl.wsztajerowski.demo.lamport.jcstress.passing.TwoConsumersFastPathBufferStress.html">pl.wsztajerowski.demo.lamport.jcstress.passing.TwoConsumersFastPathBufferStress</a></td>
+<td>10<sup>8</sup></td><td class="passed">PASSED</td>
+<td class="interesting">INTERESTING</td>
+<td class="passed"></td>
+</tr>
+<tr class="cell1">
+<td>&nbsp;&nbsp;&nbsp;<a href="pl.wsztajerowski.demo.lamport.jcstress.passing.TwoProducersVolatileBufferStress.html">pl.wsztajerowski.demo.lamport.jcstress.passing.TwoProducersVolatileBufferStress</a></td>
+<td>10<sup>8</sup></td><td class="passed">PASSED</td>
+<td class="interesting">INTERESTING</td>
+<td class="passed"></td>
+</tr>
 </table>
-None!
-<br>
 <br>
 <hr>
 <h3>All tests</h3>
 <p></p>
 <table cellspacing=0 cellpadding=3 width="100%">
-<tr class="cell1">
-<td>&nbsp;&nbsp;&nbsp;<a href="pl.wsztajerowski.demo.lamport.jcstress.NonVolatileSpscLamportBufferJcstressTest.html">pl.wsztajerowski.demo.lamport.jcstress.NonVolatileSpscLamportBufferJcstressTest</a></td>
+<tr class="cell2">
+<td>&nbsp;&nbsp;&nbsp;<a href="pl.wsztajerowski.demo.lamport.jcstress.edgecase.NonVolatileSpscLamportBufferJcstressTest.html">pl.wsztajerowski.demo.lamport.jcstress.edgecase.NonVolatileSpscLamportBufferJcstressTest</a></td>
 <td>10<sup>8</sup></td><td class="failed">FAILED</td>
+<td class="interesting"></td>
+<td class="passed"></td>
+</tr>
+<tr class="cell1">
+<td>&nbsp;&nbsp;&nbsp;<a href="pl.wsztajerowski.demo.lamport.jcstress.passing.FastPathLamportBufferStress.html">pl.wsztajerowski.demo.lamport.jcstress.passing.FastPathLamportBufferStress</a></td>
+<td>10<sup>8</sup></td><td class="passed">PASSED</td>
+<td class="interesting"></td>
+<td class="passed"></td>
+</tr>
+<tr class="cell2">
+<td>&nbsp;&nbsp;&nbsp;<a href="pl.wsztajerowski.demo.lamport.jcstress.passing.LockBasedLamportBufferOfferPollStress.html">pl.wsztajerowski.demo.lamport.jcstress.passing.LockBasedLamportBufferOfferPollStress</a></td>
+<td>10<sup>8</sup></td><td class="passed">PASSED</td>
+<td class="interesting"></td>
+<td class="passed"></td>
+</tr>
+<tr class="cell1">
+<td>&nbsp;&nbsp;&nbsp;<a href="pl.wsztajerowski.demo.lamport.jcstress.passing.SingleThreadLamportBufferMultiOpStress.html">pl.wsztajerowski.demo.lamport.jcstress.passing.SingleThreadLamportBufferMultiOpStress</a></td>
+<td>10<sup>8</sup></td><td class="passed">PASSED</td>
+<td class="interesting">INTERESTING</td>
+<td class="passed"></td>
+</tr>
+<tr class="cell2">
+<td>&nbsp;&nbsp;&nbsp;<a href="pl.wsztajerowski.demo.lamport.jcstress.passing.SpuriousWakeupLamportBufferStress.html">pl.wsztajerowski.demo.lamport.jcstress.passing.SpuriousWakeupLamportBufferStress</a></td>
+<td>10<sup>8</sup></td><td class="passed">PASSED</td>
+<td class="interesting"></td>
+<td class="passed"></td>
+</tr>
+<tr class="cell1">
+<td>&nbsp;&nbsp;&nbsp;<a href="pl.wsztajerowski.demo.lamport.jcstress.passing.TwoConsumersFastPathBufferStress.html">pl.wsztajerowski.demo.lamport.jcstress.passing.TwoConsumersFastPathBufferStress</a></td>
+<td>10<sup>8</sup></td><td class="passed">PASSED</td>
+<td class="interesting">INTERESTING</td>
+<td class="passed"></td>
+</tr>
+<tr class="cell2">
+<td>&nbsp;&nbsp;&nbsp;<a href="pl.wsztajerowski.demo.lamport.jcstress.passing.TwoProducersVolatileBufferStress.html">pl.wsztajerowski.demo.lamport.jcstress.passing.TwoProducersVolatileBufferStress</a></td>
+<td>10<sup>8</sup></td><td class="passed">PASSED</td>
+<td class="interesting">INTERESTING</td>
+<td class="passed"></td>
+</tr>
+<tr class="cell1">
+<td>&nbsp;&nbsp;&nbsp;<a href="pl.wsztajerowski.demo.lamport.jcstress.passing.VolatileSpscLamportBufferJcstressTest.html">pl.wsztajerowski.demo.lamport.jcstress.passing.VolatileSpscLamportBufferJcstressTest</a></td>
+<td>10<sup>8</sup></td><td class="passed">PASSED</td>
 <td class="interesting"></td>
 <td class="passed"></td>
 </tr>

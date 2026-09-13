@@ -67,19 +67,24 @@ Plus `ConditionalLamportBuffer` (also in `03-lamport-lock`): a blocking
 
 | Bug | JUnit | Fray | jcstress |
 |---|---|---|---|
-| Unlocked fast path, no re-check (`FastPathLamportBuffer`) | passes | **catches** — NPE at iteration 4 | passes — anomaly not observed |
-| `if` instead of `while` around `await()` (`ConditionalLamportBuffer`) | passes | **catches** — assertion failure at iteration 1 | passes — anomaly not observed |
+| Unlocked fast path, no re-check (`FastPathLamportBuffer`) | passes | **catches** — NPE at iteration 4 | **catches** — NPE in 1.1% of 580m samples, but only with a two-consumer test |
+| `if` instead of `while` around `await()` (`ConditionalLamportBuffer`) | passes | **catches** — assertion failure at iteration 1 | not observed by the current test |
 | TOCTOU in client code over a thread-safe object | passes | **catches** | no test at this layer |
-| Two producers on an SPSC buffer (`VolatileLamportBuffer`) | passes | catches | **catches** — lost update in 99.4% of 2.3bn samples |
+| Two producers on an SPSC buffer (`VolatileLamportBuffer`) | passes | catches | **catches** — lost update in 1.48% of 583m samples, plus 0.51% spurious "full" |
 | Missing `volatile` (`NonVolatileLamportBuffer`) | passes | **passes** | **catches** — ~35k lost writes in 655m samples |
 
 Read the two middle columns against each other. Fray finds the fast-path NPE
-*by construction*, on the fourth schedule it tries, and hands back a recording
-that replays it deterministically. jcstress hammered the same class for
-billions of executions on real cores and never happened to hit the window.
-Conversely, the missing-`volatile` bug is invisible to Fray — it enumerates
-schedules, and every schedule it produces is sequentially consistent — while
-jcstress finds it at 0.01% frequency.
+*by construction*, on the fourth schedule it tries, from an ordinary
+two-consumer test, and hands back a recording that replays it deterministically.
+jcstress finds the same NPE at 1.1% — but only once you write a test shaped like
+the bug: two consumers, one pre-filled element, and the NPE caught so it becomes
+an outcome instead of an aborted run. The original single-consumer test could
+never have found it, and did not. Conversely, the missing-`volatile` bug is
+invisible to Fray — it samples schedules, and every schedule it produces is
+sequentially consistent — while jcstress finds it at 0.01% frequency.
+
+The difference is not what each tool *can* see. It is how much you have to know
+in advance.
 
 Fray explores schedules, jcstress explores hardware. Neither subsumes the
 other; both rows above are reproducible from this repository.

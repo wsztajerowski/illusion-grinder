@@ -91,9 +91,13 @@ ConditionalLamportBufferFrayTest#spuriousWakeupCausesReadFromEmptyBuffer
          not null from a spurious wakeup]
 ```
 
-Iteration 4 and iteration 1. For comparison, jcstress ran the same two classes
-for billions of executions on real cores and observed only acceptable outcomes
-(see [`../06-jcstress`](../06-jcstress)).
+Iteration 4 and iteration 1 — both from ordinary tests that simply start two
+threads and assert. For comparison (see [`../06-jcstress`](../06-jcstress)):
+jcstress does find the fast-path NPE, at 1.1% of samples, but only once you hand
+it a test built around the bug — two consumers, one pre-filled element, the NPE
+caught so it registers as an outcome. The spurious wakeup has not been observed
+by any jcstress test in this repository. Fray needed neither the shape of the bug
+nor a guess about its outcome.
 
 > The recording directory for the first one is still named
 > `...fray.edgecase.FastTrackLamportBufferFrayTest/` — `FastTrackLamportBuffer`
