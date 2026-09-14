@@ -275,3 +275,41 @@
   color: rgba(255,255,255,0.3);
   font-size: 0.85em;
 }
+
+/* ── Thank-you QR block ──────────────────────────────────────────── */
+.thank-you .thanks-row {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 4rem;
+}
+.thank-you .thanks-main {
+  flex: 0 1 auto;
+}
+.thank-you .qr-block {
+  flex: 0 0 auto;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.85rem;
+}
+.thank-you .qr-block img {
+  width: 220px;
+  height: 220px;
+  padding: 10px;
+  background: #fff;
+  border-radius: 10px;
+  box-shadow: 0 8px 32px rgba(167,139,250,0.28);
+}
+.thank-you .qr-caption {
+  color: rgba(255,255,255,0.55);
+  font-size: 0.9em;
+  letter-spacing: 0.02em;
+}
+
+/* ── Two-column layouts ──────────────────────────────────────────── */
+/* Slidev's two-cols layout is a bare `grid-cols-2` with no gutter, so the
+   columns butt together. Give them a little breathing room. */
+.slidev-layout.two-columns {
+  column-gap: 2rem;
+}

@@ -62,7 +62,7 @@ Exception in thread "consumer-3" java.lang.NullPointerException
 <v-click>
 <div class="callout yellow">
 <mdi-lightbulb-alert class="ico-yellow" />&nbsp;
-Single-threaded tests are <strong>blind to concurrency bugs by design</strong>.<br>
+Single-threaded tests are blind to concurrency bugs by design.<br>&nbsp;
 They cannot fail on a race condition — there is no race.
 </div>
 </v-click>
@@ -159,12 +159,12 @@ Looks innocent. Hides teeth.
 
 ```
 function offer(element):
-    w ← writePos
-    if buffer[w] != null:
-        return false                 // full
-    buffer[w] ← element
-    writePos ← (w + 1) mod capacity  // publish
-    return true
+  w ← writePos
+  if buffer[w] != null:
+    return false                   // full
+  buffer[w] ← element
+  writePos ← (w + 1) mod capacity  // publish
+  return true
 ```
 
 </v-click>
@@ -175,13 +175,13 @@ function offer(element):
 
 ```
 function poll():
-    r ← readPos
-    if buffer[r] == null:
-        return empty
-    element ← buffer[r]
-    buffer[r] ← null                 // free slot
-    readPos ← (r + 1) mod capacity   // publish
-    return element
+  r ← readPos
+  if buffer[r] == null:
+    return empty
+  element ← buffer[r]
+  buffer[r] ← null                 // free slot
+  readPos ← (r + 1) mod capacity   // publish
+  return element
 ```
 
 </v-click>
@@ -200,10 +200,10 @@ function poll():
 
 ```java
 public interface LamportBuffer<E> {
-    boolean offer(E element);
-    Optional<E> poll();
-    boolean isEmpty();
-    int size();
+  boolean offer(E element);
+  Optional<E> poll();
+  boolean isEmpty();
+  int size();
 }
 ```
 
@@ -285,21 +285,21 @@ layout: two-cols
 @ParameterizedTest
 @MethodSource("bufferImplementations")
 void shouldPreserveFifoOrder(
-        LamportBuffer<Integer> buffer) {
-    assertThat(buffer)
-        .accepting(1, 2, 3)
-        .whenPolled(3)
-        .returns(1, 2, 3);
+    LamportBuffer<Integer> buffer) {
+  assertThat(buffer)
+    .accepting(1, 2, 3)
+    .whenPolled(3)
+    .returns(1, 2, 3);
 }
 
 static Stream<LamportBuffer<Integer>>
-        bufferImplementations() {
-    return Stream.of(
-        new VolatileLamportBuffer<>(8),
-        new NonVolatileLamportBuffer<>(8),
-        new LockBasedLamportBuffer<>(8),
-        new FastPathLamportBuffer<>(8)
-    );
+    bufferImplementations() {
+  return Stream.of(
+    new VolatileLamportBuffer<>(8),
+    new NonVolatileLamportBuffer<>(8),
+    new LockBasedLamportBuffer<>(8),
+    new FastPathLamportBuffer<>(8)
+  );
 }
 ```
 
@@ -324,7 +324,7 @@ Run the full suite against all four implementations — including the deliberate
 
 <v-click>
 <div class="callout red">
-<mdi-skull class="ico-red" />&nbsp; Two implementations are broken. Your CI just  <em>lied to your face</em>.
+<mdi-skull class="ico-red" />&nbsp; Two implementations are broken. Your CI just&nbsp; <em>lied to your face</em>.
 </div>
 </v-click>
 
@@ -342,8 +342,7 @@ Run the full suite against all four implementations — including the deliberate
 
 <v-click>
 <div class="callout blue">
-<mdi-lightbulb /> &nbsp;Write contract tests first. Keep them always.<br>
-But do not mistake a green suite for a concurrency correctness proof.
+<mdi-lightbulb /> &nbsp;Write contract tests first. Keep them always.<br>&nbsp;But do not mistake a green suite for a concurrency correctness proof.
 </div>
 </v-click>
 
@@ -375,7 +374,7 @@ class: section-fray
 
 - <mdi-controller class="ico-purple inline-ico" /> &nbsp;Controls the **scheduler** — decides which thread runs next
 - <mdi-radar class="ico-purple inline-ico" /> &nbsp;Instruments synchronisation points and controls thread switches
-- <mdi-infinity class="ico-purple inline-ico" /> &nbsp;Every run explores a **different interleaving** — sampled, with probabilistic guarantees of finding bugs (POS / PCT)
+- <mdi-infinity class="ico-purple inline-ico" /> &nbsp;Every run explores a **different interleaving** — sampled, with probabilistic guarantees of finding bugs
 - <mdi-dice-multiple class="ico-purple inline-ico" /> &nbsp;No reliance on the OS scheduler *"getting lucky"*
 
 </v-clicks>
@@ -392,7 +391,7 @@ Run #3:     T1 → T2 → T2 → T1 → T1
 Run #1000:  a new sample, every iteration
 ```
 
-`@ConcurrencyTest` runs **1000 iterations by default** — a thousand different schedules of the same test body.
+`@ConcurrencyTest` runs **1000 iterations by default** — a thousand different schedules of the same test body. Two main strategies:
 
 <v-clicks>
 
@@ -401,10 +400,6 @@ Run #1000:  a new sample, every iteration
 
 </v-clicks>
 
-<div class="subtle-note">
-Switch with <code>@ConcurrencyTest(scheduler = PCTScheduler.class)</code> — <code>POSScheduler</code> is the default.
-</div>
-
 ---
 
 # A Fray Test
@@ -412,14 +407,14 @@ Switch with <code>@ConcurrencyTest(scheduler = PCTScheduler.class)</code> — <c
 ```java
 @ConcurrencyTest
 void twoConsumersMustNotReadSameElement() {
-    buffer.offer(1);
-    buffer.offer(2);
-    Thread t1 = new Thread(() -> results.add(buffer.poll()));
-    Thread t2 = new Thread(() -> results.add(buffer.poll()));
-    t1.start(); t2.start();
-    t1.join();  t2.join();
-    assertThat(results).containsExactlyInAnyOrder(
-        Optional.of(1), Optional.of(2));
+  buffer.offer(1);
+  buffer.offer(2);
+  Thread t1 = new Thread(() -> results.add(buffer.poll()));
+  Thread t2 = new Thread(() -> results.add(buffer.poll()));
+  t1.start(); t2.start();
+  t1.join();  t2.join();
+  assertThat(results).containsExactlyInAnyOrder(
+    Optional.of(1), Optional.of(2));
 }
 ```
 
@@ -427,6 +422,12 @@ void twoConsumersMustNotReadSameElement() {
 <mdi-magic-staff class="ico-purple" />&nbsp;
 Looks like an ordinary JUnit test. Fray hijacks the scheduler underneath.
 </div>
+
+<v-clicks>
+<div class="subtle-note">
+Switch with <code>@ConcurrencyTest(scheduler = PCTScheduler.class)</code> — <code>POSScheduler</code> is the default.
+</div>
+</v-clicks>
 
 ---
 layout: two-cols
@@ -438,18 +439,20 @@ layout: two-cols
 
 ```java
 public Optional<E> poll() {
-    if (buffer[readPosition] == null) { // ← no lock!
-        return Optional.empty();
-    }
-    lock.lock();
-    try {
-        E elem = buffer[readPosition]; // ← re-read
-        // ...
-    } finally { lock.unlock(); }
+  if (buffer[readPos] == null) { // ← no lock!
+    return Optional.empty();
+  }
+  lock.lock();
+  try {
+    E elem = buffer[readPos]; // ← re-read
+    // ...
+  } finally { lock.unlock(); }
 }
 ```
 
 ::right::
+
+<v-click>
 
 **The interleaving Fray constructs:** <mdi-format-list-numbered class="ico-purple inline-ico" />
 
@@ -459,6 +462,7 @@ T2: passes null-check      (slot still has element)
 T1: acquires lock, reads, advances readPosition
 T2: acquires lock, reads... null → 💥 NPE
 ```
+</v-click>
 
 <v-click>
 <div class="callout purple">
@@ -493,20 +497,22 @@ layout: two-cols
 Different contract, so it never sat the four-implementation exam.</div>
 
 ```java
-public E take() throws InterruptedException {
-    lock.lock();
-    try {
-        if (buffer[readPosition] == null) { // ← if, not while!
-            notEmpty.await();
-        }
-        E elem = buffer[readPosition];  // null on spurious wakeup
-        // ...
-        return elem;                    // ← silently null
-    } finally { lock.unlock(); }
+public E take() {
+  lock.lock();
+  try {
+    if (buffer[readPos] == null) { // ← if, not while!
+      notEmpty.await();
+    }
+    E elem = buffer[readPos]; // null on spurious wakeup
+    // ...
+    return elem;              // ← silently null
+  } finally { lock.unlock(); }
 }
 ```
 
 ::right::
+
+<v-click>
 
 **The schedule Fray triggers:**
 
@@ -516,6 +522,7 @@ await() returns early 👻
   → take() returns null
   → 💥 null leaks to the consumer
 ```
+</v-click>
 
 <v-click>
 <div class="callout purple">
@@ -560,7 +567,7 @@ Thread: Thread[#3,main,5,main]
 
 ```java
 @ConcurrencyTest(
-        replay = "PATH_TO_FRAY_REPORT/recording"
+    replay = "PATH_TO_FRAY_REPORT/recording"
 )
 ```
 
@@ -568,6 +575,8 @@ Attach a debugger. Step through the exact thread switches. *Watch the bug bloom 
 
 </v-click>
 
+---
+hide: true
 ---
 
 # A Footgun in the Config <mdi-foot-print class="ico-yellow inline-ico" />
@@ -579,13 +588,13 @@ Every test class **nukes** the previous test's recording. <mdi-bomb class="ico-r
 
 ```xml
 <plugin>
-    <groupId>org.apache.maven.plugins</groupId>
-    <artifactId>maven-surefire-plugin</artifactId>
-    <configuration>
-        <systemPropertyVariables>
-            <fray.organize.by.test>true</fray.organize.by.test>
-        </systemPropertyVariables>
-    </configuration>
+  <groupId>org.apache.maven.plugins</groupId>
+  <artifactId>maven-surefire-plugin</artifactId>
+  <configuration>
+    <systemPropertyVariables>
+      <fray.organize.by.test>true</fray.organize.by.test>
+    </systemPropertyVariables>
+  </configuration>
 </plugin>
 ```
 
@@ -672,27 +681,29 @@ class: section-jcstress
 ```java
 @JCStressTest
 @Outcome(id = "1, 1, 0", expect = Expect.ACCEPTABLE,
-    desc = "Producer offers, then consumer polls it ✅")
+  desc = "Producer offers, then consumer polls it ✅")
 @Outcome(id = "1, 0, 1", expect = Expect.ACCEPTABLE,
-    desc = "Consumer polls before producer offers ✅")
+  desc = "Consumer polls before producer offers ✅")
 @Outcome(id = "1, 0, 0", expect = Expect.FORBIDDEN,
-    desc = "Producer offered… consumer never saw it 💥 (visibility bug)")
+  desc = "Producer offered… consumer never saw it 💥 (visibility bug)")
 @State
 public class NonVolatileSpscLamportBufferJcstressTest {
-    private final LamportBuffer<Integer> queue = NonVolatileLamportBuffer.createBuffer(Integer.class, 2);
+  private final LamportBuffer<Integer> queue = NonVolatileLamportBuffer.createBuffer(Integer.class, 2);
 
-    @Actor public void producer(III_Result r) { r.r1 = queue.offer(1) ? 1 : 0; }
-    @Actor public void consumer(III_Result r) { r.r2 = queue.poll().orElse(0); }
-    @Arbiter public void arbiter(III_Result r) { r.r3 = queue.poll().orElse(0); }
+  @Actor public void producer(III_Result r) { r.r1 = queue.offer(1) ? 1 : 0; }
+  @Actor public void consumer(III_Result r) { r.r2 = queue.poll().orElse(0); }
+  @Arbiter public void arbiter(III_Result r) { r.r3 = queue.poll().orElse(0); }
 }
 ```
 
+<v-clicks>
 <div class="callout">
 <mdi-key-variant />&nbsp;
 <strong>Reading the triple:</strong> <code>III_Result</code> is three ints — <code>r1</code> the producer's <code>offer</code>, <code>r2</code> the consumer's <code>poll</code>, <code>r3</code> the arbiter's <code>poll</code>.
-Both <code>@Actor</code>s run concurrently; the <code>@Arbiter</code> runs <em>after both finish</em>.
+Both <code>@Actor</code>s run concurrently; the <code>@Arbiter</code> runs&nbsp;<em>after both finish</em>.
 So <code>1, 0, 0</code> reads: offered, nobody saw it, and it never arrived.
 </div>
+</v-clicks>
 
 ---
 layout: two-cols
@@ -704,14 +715,11 @@ layout: two-cols
 
 <mdi-memory class="ico-orange inline-ico" /> Each CPU core has its own cache.
 
-<v-clicks>
-
 - Without a memory barrier, writes stay **local**
 - The JIT compiler and CPU may **reorder** instructions
 - `volatile` creates a **happens-before** guarantee
 - Skip it, and your thread lives in a parallel universe
 
-</v-clicks>
 
 ::right::
 
@@ -778,24 +786,26 @@ layout: center
 layout: two-cols
 ---
 
-# TOCTOU — When `volatile` Is Not Enough <mdi-emoticon-devil class="ico-orange inline-ico" />
+# <mdi-emoticon-devil class="ico-orange inline-ico" /> TOCTOU — When `volatile` Is Not Enough
 
 <div class="slide-subtitle"><strong>TOCTOU</strong> — <em>time-of-check to time-of-use</em>: code checks a value, then acts on it, and the value changed in the gap.</div>
 
 ```java
 // VolatileLamportBuffer, capacity 2 — but TWO producers
-@Actor void producer1(III_Result r) { r.r1 = buffer.offer(1) ? 1 : 0; }
-@Actor void producer2(III_Result r) { r.r2 = buffer.offer(2) ? 1 : 0; }
+@Actor void producer1(III_Result r) 
+{ r.r1 = buffer.offer(1) ? 1 : 0; }
+@Actor void producer2(III_Result r) 
+{ r.r2 = buffer.offer(2) ? 1 : 0; }
 
 @Arbiter void drain(III_Result r) {
-    int stored = 0;
-    while (buffer.poll().isPresent()) stored++;
-    r.r3 = stored;              // how many actually landed
+  int stored = 0;
+  while (buffer.poll().isPresent()) stored++;
+  r.r3 = stored;              // how many actually landed
 }
 ```
 
 <div class="subtle-note">
-Without the arbiter's count, <em>"both offers returned true"</em> is indistinguishable from correct.
+Without the arbiter's count,&nbsp;<em>"both offers returned true"</em>&nbsp;is indistinguishable from correct.
 </div>
 
 ::right::
@@ -810,15 +820,15 @@ Without the arbiter's count, <em>"both offers returned true"</em> is indistingui
 
 <v-click>
 <div class="callout orange">
-<code>volatile</code> protects <strong>visibility</strong>, not <strong>atomicity</strong>.<br>
-One non-atomic check-then-act, <strong>two</strong> distinct failures.<br>
-<code>offer</code> fills the slot, <em>then</em> moves the cursor — and <code>size()</code> reads both.
+<code>volatile</code>&nbsp;protects&nbsp;<strong>visibility</strong>,&nbsp;not&nbsp;<strong>atomicity</strong>
+One non-atomic check-then-act, two distinct failures.
+<code>offer</code>&nbsp;fills the slot, then moves the cursor — and&nbsp;<code>size()</code>&nbsp;reads both.
 </div>
 </v-click>
 
 <v-click>
 <div class="callout purple">
-It was never broken — it was <strong>SPSC</strong>: <em>single</em> producer, <em>single</em> consumer.<br>
+It was never broken — it was&nbsp;<strong>SPSC:</strong> single producer, single consumer.
 We brought a second producer.
 </div>
 </v-click>
@@ -853,14 +863,11 @@ We brought a second producer.
 
 # Why jcstress Cannot Promise Coverage <mdi-dice-multiple class="ico-yellow inline-ico" />
 
-<v-clicks>
-
 - <mdi-controller /> &nbsp;Fray controls exactly **one** thing — which thread runs next. Not the bytecode, not memory operations
 - <mdi-dice-6 /> &nbsp;jcstress controls **nothing**: same code, millions of runs, watch what the OS / JIT / CPU happen to do
 - <mdi-percent /> &nbsp;The visibility bug surfaced **35,222 times in 655 million** runs — 0.005%
 - <mdi-timer-sand /> &nbsp;Shorten the run and that row **disappears**. Same code. Green report.
 
-</v-clicks>
 
 <v-click>
 <div class="callout orange">
@@ -918,34 +925,20 @@ Accurate numbers for broken code are worse than no numbers at all.
 
 ```java
 @BenchmarkMode(Mode.Throughput)
+@Warmup(iterations = 5, time = 1)
+@Measurement(iterations = 5, time = 1)
 @Fork(1)
 @State(Scope.Group)
-public class ApplesToApplesBenchmark {
+public class BufferCapacityBenchmark {
 
-    @Param({"VOLATILE", "LOCK"}) String implementation;
-    @Param({"64", "1024"})       int capacity;
+    @Param({"64", "1024"}) int capacity;
+    LamportBuffer<Integer> buffer;
 
-    LamportBuffer<Long> buffer;          // built in @Setup
-    long sequence;
+    @Benchmark @Group("spsc") @GroupThreads(1)
+    public void producer(Blackhole bh) { bh.consume(buffer.offer(42)); }
 
-    @Benchmark @Group("applesToApples") @GroupThreads(1)
-    public void producer(Control control) {
-        long next = ++sequence;
-        while (!buffer.offer(next)) {              // spin until a slot frees
-            if (control.stopMeasurement) return;   // …or the iteration ends
-            Thread.onSpinWait();
-        }
-    }
-
-    @Benchmark @Group("applesToApples") @GroupThreads(1)
-    public void consumer(Blackhole bh, Control control) {
-        Optional<Long> value;
-        while ((value = buffer.poll()).isEmpty()) { // spin until one arrives
-            if (control.stopMeasurement) return;
-            Thread.onSpinWait();
-        }
-        bh.consume(value.orElseThrow());
-    }
+    @Benchmark @Group("spsc") @GroupThreads(1)
+    public void consumer(Blackhole bh) { bh.consume(buffer.poll()); }
 }
 ```
 
@@ -975,8 +968,8 @@ JmhBenchmark.applesToApples                 1024              LOCK  thrpt   10  
 <v-click>
 <div class="callout green big-callout">
 <mdi-rocket class="ico-green" />&nbsp;
-Lock-free volatile: <strong>3–4× higher throughput</strong> — for SPSC.<br>
-And <em>only</em> for SPSC: add a second producer and it silently loses <strong>~1.5%</strong> of writes.
+Lock-free volatile:&nbsp;<strong>3–4× higher throughput</strong>&nbsp; — for SPSC.
+And&nbsp;<em>only</em>&nbsp;for SPSC: add a second producer and it silently loses&nbsp;<strong>~1.5%</strong>&nbsp;of writes.
 </div>
 </v-click>
 
@@ -1023,6 +1016,8 @@ layout: section
 </div>
 
 ---
+hide: true
+---
 
 # When to Reach for Which Tool
 
@@ -1046,6 +1041,10 @@ layout: section
 | <mdi-pulse class="ico-orange inline-ico" /> **jcstress** | tests × **configurations** × time each — and configurations multiply | every PR while small, nightly as it grows |
 | <mdi-speedometer class="ico-green inline-ico" /> **JMH** | params × **forks** × iterations × time | release, on a quiet machine |
 
+---
+
+# What Each Circle Costs <mdi-timer-outline class="ico-green inline-ico" />
+
 <div class="subtle-note">
 This repo, one laptop: 0.34 s · 5.4 s · 4 m 21 s · 13 m 25 s — one run each, JMH at 2 forks for one of three
 benchmark classes. An anchor, not a benchmark.
@@ -1054,7 +1053,7 @@ benchmark classes. An anchor, not a benchmark.
 <v-click>
 <div class="callout orange">
 <mdi-alert class="ico-orange" />&nbsp;
-The two probabilistic tools have <strong>no natural stopping point</strong>. You decide how long to look —
+The two probabilistic tools have&nbsp;<strong>no natural stopping point</strong>&nbsp;You decide how long to look —
 and a shorter run is a weaker claim, not a faster test.
 </div>
 </v-click>
@@ -1111,6 +1110,9 @@ layout: center
 class: text-center thank-you
 ---
 
+<div class="thanks-row">
+<div class="thanks-main">
+
 # Thank You <mdi-hand-wave class="ico-yellow inline-ico" />
 
 <br>
@@ -1130,3 +1132,12 @@ Now go look at your "well-tested" concurrent code.<br>
 <span class="footer-title">
 The Illusion Grinder - Four circles of testing hell for concurrent Java
 </span>
+
+</div>
+
+<div class="qr-block">
+  <img src="/src/resources/poll-qr.png" alt="QR code linking to the post-talk feedback poll" />
+  <span class="qr-caption">Feedback poll <mdi-clipboard-text-outline class="ico-green inline-ico" /></span>
+</div>
+
+</div>
