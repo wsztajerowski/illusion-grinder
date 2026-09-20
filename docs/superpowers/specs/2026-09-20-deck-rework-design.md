@@ -220,8 +220,56 @@ on iteration 721. Which schedule caused it?"* — a question that does not work 
 > It failed on iteration 4 of 1000. Re-run it and it passes — the next run samples
 > different schedules. Without a recording, the bug is gone.
 
-**Flagged for the speaker's decision.** If the dramatised number is deliberate, say so and
-the slide stays as it is; only the recap figures in section A change.
+**Decided (2026-09-20): use the real iteration numbers.**
+
+### Two constraints on applying that
+
+**1. The recordings are stale.** The logs name `FastTrackLamportBufferFrayTest` and
+`FastTrackLamportBuffer`; the repo today has `FastPathLamportBuffer` and no `FastTrack`
+file anywhere. `demos/results/fray/` was committed once, in `a9d6e9f`, and the class was
+renamed afterwards. The recorded *numbers* are genuine; the surrounding transcript is from
+before the rename. Re-recording is not a quick fix either — every `fray/edgecase/` test
+carries `@Disabled`, so an ordinary `mvn test` does not regenerate these logs, and POS
+sampling is randomised, so a fresh run would land on a different iteration anyway.
+
+**Consequence:** the console block on the slide stays a lightly edited transcript either
+way — class names updated to match today's code. What changes is that the *number* is now
+the recorded one instead of an invented one.
+
+**2. The replay slide quotes a test the audience will no longer have seen.** It currently
+shows the `ConditionalLamportBufferFrayTest` stack trace, and that bug's slide moves to the
+appendix (section B, slide 19). So the replay slide switches to the FastPath NPE — a bug
+the audience saw two slides earlier, whose stack trace is the literal callback to the cold
+open on slide 3:
+
+```
+2026-05-27 00:10:01 [INFO]: Error found at iter: 4, step: 26, Elapsed time: 32ms
+2026-05-27 00:10:01 [INFO]: Error: java.lang.NullPointerException
+Thread: Thread[#8048,consumer-1,5,main]
+java.lang.NullPointerException
+    at java.base/java.util.Objects.requireNonNull(Objects.java:220)
+    at java.base/java.util.Optional.of(Optional.java:113)
+    at pl.wsztajerowski.demo.lamport.mpmc.FastPathLamportBuffer.poll(FastPathLamportBuffer.java:46)
+    at pl.wsztajerowski.demo.lamport.fray.edgecase.FastPathLamportBufferFrayTest
+        .twoConsumersOnSingleElementMustNotCrash(FastPathLamportBufferFrayTest.java:37)
+
+2026-05-27 00:10:01 [INFO]: The recording is saved to
+    demos/05-fray/target/fray/fray-report/.../recording
+```
+
+`Optional.of(null)` is where the NPE actually comes from — a detail the current slide does
+not show.
+
+New hook, replacing *"the test fails on iteration 721. Which schedule caused it?"*:
+
+> It failed on iteration 4 of 1000. Re-run it and it passes — the next run samples
+> different schedules. Without a recording, the bug is gone.
+
+### Follow-up, not part of this rework
+
+`demos/results/fray/` should be re-recorded against current class names, which means
+temporarily enabling the `@Disabled` edgecase tests. Tracked here so it is not forgotten;
+`README.md`'s reproducibility promise is weaker than it reads until that happens.
 
 ### Numbers not re-verified
 
