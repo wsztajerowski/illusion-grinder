@@ -270,6 +270,16 @@ EOF
 
 ---
 
+> **Deviation applied during execution.** The planned merge kept the ASCII buffer diagram
+> plus `poll()`. That could not be rendered: whenever the buffer-diagram fence shares a slide
+> with a second fence, Slidev leaks its injected `<CodeBlockWrapper …>` / `</CodeBlockWrapper>`
+> tags into the rendered code, and in one arrangement fails to compile outright with
+> `Invalid end tag`. The trigger was isolated against scratch slides — two plain fences, with or
+> without `<v-click>`, render fine, so it is specific to that diagram's content. The merge was
+> therefore built on the *pseudocode* slide's structure, which is proven to render: the surviving
+> slide keeps `offer()` and `poll()` and the "Spot the bug?" hook, gains a one-line Lamport
+> intro, and drops the ASCII buffer picture.
+
 ### Task 3: Rebuild the Circle I close
 
 `Why JUnit Cannot See This` becomes a tally. Its three theory bullets go; its blue guidance callout is absorbed into a single callout that also carries the limitation. The verdict line is kept verbatim.

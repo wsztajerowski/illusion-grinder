@@ -114,42 +114,10 @@ layout: section
 ## *The deceptively simple data structure we're about to torture.*
 
 ---
-layout: two-cols
----
 
 # The Algorithm
 
-<mdi-account-tie class="ico-blue inline-ico" /> **Leslie Lamport's wait-free SPSC (Single Producer, Single Consumer) queue (1983)**
-
-- Bounded circular array of capacity `N`
-- Two cursors: `writePos` (producer) and `readPos` (consumer)
-- **No locks. No CAS. No blocking.** <mdi-flash class="ico-yellow inline-ico" />
-- O(1) offer and poll · low allocation pressure
-
-<div class="callout blue">
-Looks innocent. Hides teeth.
-</div>
-
-::right::
-
-<div class="buffer-viz">
-
-```
-  capacity = 4
-
-   ┌─────┬─────┬─────┬─────┐
-   │  A  │  B  │     │     │
-   └─────┴─────┴─────┴─────┘
-      ↑           ↑
-   readPos    writePos
-   (consumer)  (producer)
-```
-
-</div>
-
----
-
-# The Algorithm — Pseudocode
+<mdi-account-tie class="ico-blue inline-ico" /> **Leslie Lamport's wait-free SPSC queue (1983)** — two cursors, **no locks, no CAS** <mdi-flash class="ico-yellow inline-ico" />
 
 <div class="two-col-code">
 
