@@ -295,21 +295,26 @@ Run the full suite against all four implementations — including the deliberate
 
 ---
 
-# Why JUnit Cannot See This
+# Circle I Closes — JUnit
 
-<v-clicks>
+<div class="vs-table">
 
-- <mdi-account /> &nbsp;JUnit runs on **one thread** — no concurrent access to trigger the bug
-- <mdi-wall /> &nbsp;The JVM applies no memory barrier — the test never exercises visibility
-- <mdi-eye-off /> &nbsp;Missing `volatile` is **invisible** to single-threaded tests
+| <mdi-magnify class="ico-blue inline-ico" /> Caught | <mdi-run class="ico-red inline-ico" /> Walked free |
+|---|---|
+| **Nothing.** It was never going to. | **All four.** 68 / 68 green. |
+| A single-threaded test cannot construct a race. | `Volatile` · `NonVolatile` · `LockBased` · `FastPath` |
 
-</v-clicks>
+</div>
 
 <v-click>
 <div class="callout blue">
-<mdi-lightbulb /> &nbsp;Write contract tests first. Keep them always.<br>&nbsp;But do not mistake a green suite for a concurrency correctness proof.
+<mdi-eye-off class="ico-blue" />&nbsp;
+<strong>Structurally cannot</strong>&nbsp; start a second thread — no race, no failure, by construction.<br>&nbsp;
+Write contract tests first and keep them always. Just never mistake a green suite for a concurrency proof.
 </div>
 </v-click>
+
+<div class="subtle-note">Score: 0 of 4 bugs found</div>
 
 <v-click>
 <div class="verdict">
@@ -337,31 +342,8 @@ class: section-fray
 
 <v-clicks>
 
-- <mdi-controller class="ico-purple inline-ico" /> &nbsp;Controls the **scheduler** — decides which thread runs next
-- <mdi-radar class="ico-purple inline-ico" /> &nbsp;Instruments synchronisation points and controls thread switches
-- <mdi-infinity class="ico-purple inline-ico" /> &nbsp;Every run explores a **different interleaving** — sampled, with probabilistic guarantees of finding bugs
-- <mdi-dice-multiple class="ico-purple inline-ico" /> &nbsp;No reliance on the OS scheduler *"getting lucky"*
-
-</v-clicks>
-
----
-
-# Every Run — A Different Schedule
-
-```
-Run #1:     T1 → T1 → T2 → T1 → T2
-Run #2:     T2 → T1 → T2 → T2 → T1
-Run #3:     T1 → T2 → T2 → T1 → T1
-...
-Run #1000:  a new sample, every iteration
-```
-
-`@ConcurrencyTest` runs **1000 iterations by default** — a thousand different schedules of the same test body. Two main strategies:
-
-<v-clicks>
-
-- <mdi-shuffle-variant class="ico-purple inline-ico" /> &nbsp;**POS** *(Partial Order Sampling)* — the default: picks the next thread at random, re-rolling only the threads that actually race, so equivalent schedules are not explored twice
-- <mdi-sort-numeric-variant class="ico-purple inline-ico" /> &nbsp;**PCT** *(Probabilistic Concurrency Testing)* — random thread priorities plus a few random preemption points, with a provable lower bound on catching a bug of a given depth
+- <mdi-controller class="ico-purple inline-ico" /> &nbsp;Fray controls the **scheduler** — it decides which thread runs next, so every run explores a **different interleaving**
+- <mdi-dice-multiple class="ico-purple inline-ico" /> &nbsp;`@ConcurrencyTest` samples **1000 schedules by default** — no reliance on the OS scheduler *"getting lucky"*
 
 </v-clicks>
 
@@ -387,12 +369,6 @@ void twoConsumersMustNotReadSameElement() {
 <mdi-magic-staff class="ico-purple" />&nbsp;
 Looks like an ordinary JUnit test. Fray hijacks the scheduler underneath.
 </div>
-
-<v-clicks>
-<div class="subtle-note">
-Switch with <code>@ConcurrencyTest(scheduler = PCTScheduler.class)</code> — <code>POSScheduler</code> is the default.
-</div>
-</v-clicks>
 
 ---
 layout: two-cols
@@ -513,20 +489,19 @@ while (isEmpty()) condition.await();
 
 # Deterministic Replay <mdi-replay class="ico-purple inline-ico" />
 
-**Classic torture:** the test fails on iteration 721. *Which schedule caused it?*
+**Classic torture:** the test fails on iteration 4 of 1000. *Re-run it and it passes.*
 
 ```
-2026-05-26 22:49:04 [INFO]: Error found at iter: 721, step: 1850, Elapsed time: 60ms
-2026-05-26 22:49:04 [INFO]: Error: java.lang.AssertionError: [consumer must receive the produced value,
-not null from a spurious wakeup]
-Expecting actual not to be null
-Thread: Thread[#3,main,5,main]
-    at pl.wsztajerowski.demo.lamport.fray.edgecase.ConditionalLamportBufferFrayTest
-    .spuriousWakeupCausesReadFromEmptyBuffer(ConditionalLamportBufferFrayTest.java:54)
-    ...
-
-2026-05-26 22:49:04 [INFO]: The recording is saved to /demos/05-fray/target/fray/fray-report/.../recording
+2026-05-27 00:10:01 [INFO]: Error found at iter: 4, step: 26, Elapsed time: 32ms
+2026-05-27 00:10:01 [INFO]: Error: java.lang.NullPointerException
+java.lang.NullPointerException
+    at java.base/java.util.Optional.of(Optional.java:113)
+    at pl.wsztajerowski.demo.lamport.mpmc.FastPathLamportBuffer.poll(FastPathLamportBuffer.java:46)
+    at pl.wsztajerowski.demo.lamport.fray.edgecase.FastPathLamportBufferFrayTest
+        .twoConsumersOnSingleElementMustNotCrash(FastPathLamportBufferFrayTest.java:37)
 ```
+
+<div class="subtle-note">The NPE is <code>Optional.of(null)</code> — the same line 46 as the exception we opened with.</div>
 
 <v-click>
 
@@ -538,7 +513,7 @@ Thread: Thread[#3,main,5,main]
 )
 ```
 
-Attach a debugger. Step through the exact thread switches. *Watch the bug bloom in slow motion.*
+Without the recording the bug is gone — *with it, attach a debugger and step the exact switches.*
 
 </v-click>
 
