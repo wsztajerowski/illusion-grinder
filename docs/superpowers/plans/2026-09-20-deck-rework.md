@@ -270,15 +270,16 @@ EOF
 
 ---
 
-> **Deviation applied during execution.** The planned merge kept the ASCII buffer diagram
-> plus `poll()`. That could not be rendered: whenever the buffer-diagram fence shares a slide
-> with a second fence, Slidev leaks its injected `<CodeBlockWrapper …>` / `</CodeBlockWrapper>`
-> tags into the rendered code, and in one arrangement fails to compile outright with
-> `Invalid end tag`. The trigger was isolated against scratch slides — two plain fences, with or
-> without `<v-click>`, render fine, so it is specific to that diagram's content. The merge was
-> therefore built on the *pseudocode* slide's structure, which is proven to render: the surviving
-> slide keeps `offer()` and `poll()` and the "Spot the bug?" hook, gains a one-line Lamport
-> intro, and drops the ASCII buffer picture.
+> **Deviation applied during execution.** Slidev leaks its injected `<CodeBlockWrapper …>` /
+> `</CodeBlockWrapper>` tags into rendered code when the buffer-diagram fence shares a slide
+> with a second fence, and in one arrangement fails to compile with `Invalid end tag`. Isolated
+> against scratch slides: two plain fences render fine, with or without `<v-click>`, so the
+> trigger is that diagram's content, not the count. **Resolution:** the diagram is emitted as a
+> raw `<pre class="buffer-viz">` rather than a markdown fence, so it is not a code block and no
+> wrapper is injected. The slide keeps the array picture (capacity, `readPos`, `writePos`) beside
+> `poll()`, with `offer()` reduced to a line in the callout. `.buffer-viz` in `style.css` gained
+> code-block scale and background — a knowing exception to this plan's no-CSS constraint, since a
+> raw `<pre>` inherits body type and rendered at roughly double size without it.
 
 ### Task 3: Rebuild the Circle I close
 

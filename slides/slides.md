@@ -123,23 +123,20 @@ layout: section
 
 <v-click>
 
-**Producer side** <mdi-arrow-right-bold class="ico-blue inline-ico" />
+<pre class="buffer-viz">
+  capacity = 4
 
-```
-function offer(element):
-  w ← writePos
-  if buffer[w] != null:
-    return false                   // full
-  buffer[w] ← element
-  writePos ← (w + 1) mod capacity  // publish
-  return true
-```
+   ┌─────┬─────┬─────┬─────┐
+   │  A  │  B  │     │     │
+   └─────┴─────┴─────┴─────┘
+      ↑           ↑
+   readPos    writePos
+   (consumer)  (producer)
+</pre>
 
 </v-click>
 
 <v-click>
-
-**Consumer side** <mdi-arrow-left-bold class="ico-orange inline-ico" />
 
 ```
 function poll():
@@ -158,7 +155,7 @@ function poll():
 
 <v-click>
 <div class="callout purple">
-<mdi-magnify /> &nbsp;Spot the bug? Neither did I. Neither did my unit tests.
+<mdi-magnify /> &nbsp;<code>offer()</code> is the mirror image. Spot the bug? Neither did I — neither did my unit tests.
 </div>
 </v-click>
 
