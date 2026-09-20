@@ -29,7 +29,18 @@ npm run build
 
 # PDF export (installs Playwright's Chromium on first run)
 npm run export
+
+# One PNG per slide into slides/.shots/ — for visually checking the deck
+npm run shots
+npm run shots -- --range 12-18     # just a few slides
+npm run shots -- --with-clicks     # one image per click step, not per slide
 ```
+
+`npm run shots` renders the whole deck (42 slides) in about 25 seconds and
+writes `.shots/1.png` … `.shots/42.png`. The numbering follows slide order, so
+`--range` takes the same numbers the presenter view shows. It is the quickest
+way to catch overflowing content, clipped code blocks and broken layout without
+clicking through the deck by hand.
 
 Slidev extras once `npm run dev` is up:
 
@@ -55,6 +66,6 @@ for the jcstress tables and JMH numbers.
 
 ## Notes
 
-* `slides/dist/` and `slides/node_modules/` are git-ignored, as are exported
-  PDFs (`*.pdf`).
+* `slides/dist/`, `slides/node_modules/` and `slides/.shots/` are git-ignored,
+  as are exported PDFs (`*.pdf`).
 * The Polish-language talk abstract is in [`../docs/abstract-pl.md`](../docs/abstract-pl.md).

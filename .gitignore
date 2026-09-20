@@ -85,6 +85,9 @@ dist/
 *.pdf
 *.pptx
 
+# Slide screenshots used for visual verification
+slides/.shots/
+
 ############################################
 # Vite (used internally by Slidev)
 ############################################

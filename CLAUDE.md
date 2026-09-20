@@ -42,7 +42,15 @@ npm install
 npm run dev      # Development server
 npm run build    # Build static site
 npm run export   # Export to PDF
+npm run shots    # One PNG per slide into slides/.shots/ (git-ignored)
 ```
+
+`npm run shots` is the visual-verification loop: it renders all 42 slides to
+PNG in ~25s so the rendered result can be inspected directly, rather than
+inferred from the Markdown. Narrow it with `-- --range 12-18`, or use
+`-- --with-clicks` to get one image per `v-click` step. Always run it after
+editing `slides.md` or `style.css` — content that fits in the source often
+overflows the 16:9 frame.
 
 ## Architecture
 
