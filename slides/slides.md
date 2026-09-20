@@ -476,12 +476,14 @@ Check-then-act without a lock is a race.<br>
 
 ```java
 // ❌ FastPathLamportBuffer — check, then lock
-if (buffer[readPosition] == null) return Optional.empty();
+if (buffer[readPosition] == null)
+  return Optional.empty();
 lock.lock();
 
 // ✅ LockBasedLamportBuffer — lock, then check
 lock.lock();
-if (buffer[readPosition] == null) return Optional.empty();
+if (buffer[readPosition] == null)
+  return Optional.empty();
 ```
 
 </v-click>
@@ -791,7 +793,7 @@ layout: two-cols
 <div class="slide-subtitle"><strong>TOCTOU</strong> — <em>time-of-check to time-of-use</em>: code checks a value, then acts on it, and the value changed in the gap.</div>
 
 ```java
-// VolatileLamportBuffer, capacity 2 — but TWO producers
+// VolatileLamportBuffer, cap 2 — but TWO producers
 @Actor void producer1(III_Result r) 
 { r.r1 = buffer.offer(1) ? 1 : 0; }
 @Actor void producer2(III_Result r) 
@@ -800,7 +802,7 @@ layout: two-cols
 @Arbiter void drain(III_Result r) {
   int stored = 0;
   while (buffer.poll().isPresent()) stored++;
-  r.r3 = stored;              // how many actually landed
+  r.r3 = stored;        // how many actually landed
 }
 ```
 
@@ -811,11 +813,11 @@ Without the arbiter's count,&nbsp;<em>"both offers returned true"</em>&nbsp;is i
 ::right::
 
 ```
- RESULT      SAMPLES     FREQ       EXPECT
-1, 1, 2  570.984.962   98,00%   Acceptable   both stored ✅
-1, 1, 1    8.627.481    1,48%  Interesting   lost update 💥
-1, 0, 1    1.533.235    0,26%  Interesting   "full" — free slot 💥
-0, 1, 1    1.482.296    0,25%  Interesting   same, other producer 💥
+ RESULT    FREQ       EXPECT
+1, 1, 2   98,00%   Acceptable   both stored ✅
+1, 1, 1    1,48%  Interesting   lost update 💥
+1, 0, 1    0,26%  Interesting   "full" — free slot 💥
+0, 1, 1    0,25%  Interesting   same, other producer 💥
 ```
 
 <v-click>
@@ -854,7 +856,7 @@ We brought a second producer.
 <div class="callout orange">
 
 <code>NonVolatileLamportBuffer</code> &nbsp;<mdi-arrow-right class="inline-ico" />&nbsp; passes Fray, fails jcstress — Fray <em>structurally</em> cannot see it.<br>
-<code>FastPathLamportBuffer</code> &nbsp;<mdi-arrow-right class="inline-ico" />&nbsp; <em>both</em> catch it (jcstress at 1.1%) — but only once you write the two-consumer test.
+<code>FastPathLamportBuffer</code> &nbsp;<mdi-arrow-right class="inline-ico" />&nbsp; <em>both</em> catch it (jcstress at 1.1%) — but only with a two-consumer test.
 
 </div>
 </v-click>
