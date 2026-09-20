@@ -314,11 +314,9 @@ Write contract tests first and keep them always. Just never mistake a green suit
 </div>
 </v-click>
 
-<div class="subtle-note">Score: 0 of 4 bugs found</div>
-
 <v-click>
 <div class="verdict">
-<span class="verdict-label">Verdict:</span> <em>Necessary. Insufficient. On to the next circle.</em> <mdi-arrow-down-bold-circle class="ico-purple inline-ico" />
+<span class="verdict-label">Score:</span> 0 of 4 &nbsp;·&nbsp; <span class="verdict-label">Verdict:</span> <em>Necessary. Insufficient. On to the next circle.</em> <mdi-arrow-down-bold-circle class="ico-purple inline-ico" />
 </div>
 </v-click>
 
@@ -563,28 +561,30 @@ BUILD SUCCESS
 
 ---
 
-# Why Fray Cannot See This
+# Circle II Closes — Fray
 
-<v-clicks>
+<div class="vs-table">
 
-- <mdi-controller /> &nbsp;Fray controls **thread scheduling** — not CPU caches or JIT optimisations
-- <mdi-memory /> &nbsp;The bug is a **memory visibility** failure — the write happens, the other thread never sees it — not a scheduling failure
-- <mdi-chip /> &nbsp;It only appears with real hardware effects (cache latency + reordering)
+| <mdi-magnify class="ico-purple inline-ico" /> Caught | <mdi-run class="ico-red inline-ico" /> Walked free |
+|---|---|
+| `FastPath` — NPE at **iteration 4 of 1000**, replayable | `NonVolatile` — 2000 schedules, all green, **still broken** |
+| `Conditional take()` — null from a spurious wakeup, **iteration 1** · *appendix* | `Volatile` with two producers — not a scheduling bug |
 
-</v-clicks>
+</div>
 
 <v-click>
 <div class="callout purple">
 
 **Fray proves:** "No thread ordering breaks my logic." <mdi-check class="ico-green inline-ico" /><br>
-**Fray cannot prove:** "The JVM / CPU will not reorder my memory accesses." <mdi-close class="ico-red inline-ico" />
+**Fray cannot prove:** "The JVM / CPU will not reorder my memory accesses." <mdi-close class="ico-red inline-ico" /><br>
+Every schedule it explores is sequentially consistent — memory visibility is **structurally invisible** to it.
 
 </div>
 </v-click>
 
 <v-click>
 <div class="verdict">
-<span class="verdict-label">Verdict:</span> <em>Logic, yes. Hardware reality, no. Descend further.</em> <mdi-arrow-down-bold-circle class="ico-orange inline-ico" />
+<span class="verdict-label">Score:</span> 2 of 4 &nbsp;·&nbsp; <span class="verdict-label">Verdict:</span> <em>Logic, yes. Hardware reality, no. Descend further.</em> <mdi-arrow-down-bold-circle class="ico-orange inline-ico" />
 </div>
 </v-click>
 
@@ -608,11 +608,8 @@ class: section-jcstress
 
 <v-clicks>
 
-- <mdi-flask class="ico-orange inline-ico" /> &nbsp;OpenJDK's laboratory for the Java Memory Model
-- <mdi-counter class="ico-orange inline-ico" /> &nbsp;Runs **millions** of iterations on real hardware
-- <mdi-dice-6 class="ico-orange inline-ico" /> &nbsp;Lets OS / JVM / CPU choose execution order — then *observes outcomes*
-- <mdi-chip class="ico-orange inline-ico" /> &nbsp;Can pin actors to specific CPUs (affinity, where supported)
-- <mdi-fire class="ico-orange inline-ico" /> &nbsp;Stresses cache coherence by physically placing the load
+- <mdi-flask class="ico-orange inline-ico" /> &nbsp;OpenJDK's laboratory for the Java Memory Model — **millions** of iterations on real hardware
+- <mdi-dice-6 class="ico-orange inline-ico" /> &nbsp;Controls **nothing**: the OS, JVM and CPU pick the order and jcstress just *observes outcomes* — pinning actors to cores to stress cache coherence
 
 </v-clicks>
 
@@ -652,8 +649,6 @@ layout: two-cols
 ---
 
 # Why `volatile` Is Non-Negotiable
-
-<div class="slide-subtitle">Before we look at the result — remember why missing <code>volatile</code> matters.</div>
 
 <mdi-memory class="ico-orange inline-ico" /> Each CPU core has its own cache.
 
@@ -803,26 +798,30 @@ We brought a second producer.
 
 ---
 
-# Why jcstress Cannot Promise Coverage <mdi-dice-multiple class="ico-yellow inline-ico" />
+# Circle III Closes — jcstress
 
-- <mdi-controller /> &nbsp;Fray controls exactly **one** thing — which thread runs next. Not the bytecode, not memory operations
-- <mdi-dice-6 /> &nbsp;jcstress controls **nothing**: same code, millions of runs, watch what the OS / JIT / CPU happen to do
-- <mdi-percent /> &nbsp;The visibility bug surfaced **35,222 times in 655 million** runs — 0.005%
-- <mdi-timer-sand /> &nbsp;Shorten the run and that row **disappears**. Same code. Green report.
+<div class="vs-table">
 
+| <mdi-magnify class="ico-orange inline-ico" /> Caught | <mdi-run class="ico-red inline-ico" /> Walked free |
+|---|---|
+| `NonVolatile` — 35,222 of 655M runs, **0.005%**. The bug Fray structurally cannot see | **Nothing.** |
+| `Volatile` @ 2 producers — **~1.5%** lost · `FastPath` — **1.1%** | Every bug in the lineup is now visible. |
+
+</div>
 
 <v-click>
 <div class="callout orange">
 
 **jcstress proves:** "This outcome really happens on real hardware." <mdi-check class="ico-green inline-ico" /><br>
-**jcstress cannot prove:** "That outcome never happens." <mdi-close class="ico-red inline-ico" />
+**jcstress cannot prove:** "That outcome never happens." <mdi-close class="ico-red inline-ico" /><br>
+It cannot find an outcome you never declared with <code>@Outcome</code>. Shorten the run and the 0.005% row disappears — same code, green report.
 
 </div>
 </v-click>
 
 <v-click>
 <div class="verdict">
-<span class="verdict-label">Verdict:</span> <em>Hardware reality, yes. Coverage, never. Two tools, not one.</em> <mdi-arrow-down-bold-circle class="ico-green inline-ico" />
+<span class="verdict-label">Score:</span> 4 of 4 &nbsp;·&nbsp; <span class="verdict-label">Verdict:</span> <em>Hardware reality, yes. Coverage, never. Two tools, not one.</em> <mdi-arrow-down-bold-circle class="ico-green inline-ico" />
 </div>
 </v-click>
 
@@ -835,31 +834,6 @@ class: section-jmh
 
 # JMH
 ## *The bill arrives. Correctness is never free.*
-
----
-
-# Only Benchmark Correct Code <mdi-scale-balance class="ico-green inline-ico" />
-
-**Why naive benchmarks lie:**
-
-- <mdi-delete-sweep class="ico-red inline-ico" /> &nbsp;JIT eliminates "dead" computations — you measure *nothing*
-- <mdi-thermometer-low class="ico-red inline-ico" /> &nbsp;Poor warmup distorts steady-state numbers
-- <mdi-arrow-up-bold-box class="ico-red inline-ico" /> &nbsp;Loop hoisting moves work outside the benchmark body
-
-<v-click>
-
-**JMH solves this:**
-
-- <mdi-shield-check class="ico-green inline-ico" /> &nbsp;`Blackhole` prevents dead code elimination
-- <mdi-shield-check class="ico-green inline-ico" /> &nbsp;Warmup + fork isolation produce stable, comparable measurements
-</v-click>
-
-<v-click>
-<div class="callout green">
-<mdi-skull-outline class="ico-green" />&nbsp;
-Accurate numbers for broken code are worse than no numbers at all.
-</div>
-</v-click>
 
 ---
 
@@ -885,8 +859,8 @@ public class BufferCapacityBenchmark {
 ```
 
 <div class="subtle-note">
-Run with <code>-f 2 -wi 5 -i 5</code> — the CLI overrides <code>@Fork(1)</code>, hence <code>Cnt 10</code> overleaf.
-<code>Control.stopMeasurement</code> is what stops a spinning benchmark from hanging at the end of an iteration.
+<code>Blackhole</code> stops the JIT deleting "dead" work; warmup and forks stop you measuring a cold JVM.
+Without them you are measuring nothing — and accurate numbers for broken code are worse than no numbers.
 </div>
 
 ---
@@ -898,20 +872,22 @@ Run with <code>-f 2 -wi 5 -i 5</code> — the CLI overrides <code>@Fork(1)</code
 ```
 Benchmark                             (capacity)  (implementation)   Mode  Cnt         Score         Error  Units
 JmhBenchmark.applesToApples                   64          VOLATILE  thrpt   10  12806160,712 ±  138235,768  ops/s
-JmhBenchmark.applesToApples:consumer          64          VOLATILE  thrpt   10   6388150,897 ±   69540,893  ops/s
-JmhBenchmark.applesToApples:producer          64          VOLATILE  thrpt   10   6418009,816 ±   68750,521  ops/s
 JmhBenchmark.applesToApples                   64              LOCK  thrpt   10   3119315,813 ±  205707,745  ops/s
-JmhBenchmark.applesToApples:consumer          64              LOCK  thrpt   10   1559657,794 ±  102857,340  ops/s
-JmhBenchmark.applesToApples:producer          64              LOCK  thrpt   10   1559658,019 ±  102850,405  ops/s
-JmhBenchmark.applesToApples                 1024          VOLATILE  thrpt   10  14877651,416 ± 1379752,921  ops/s
-JmhBenchmark.applesToApples                 1024              LOCK  thrpt   10   5413892,148 ±  908797,769  ops/s
 ```
 
+<div class="vs-table">
+
+| <mdi-speedometer class="ico-green inline-ico" /> Measured | <mdi-cancel class="ico-red inline-ico" /> Refused the scale |
+|---|---|
+| `Volatile` — **12.8M ops/s**, SPSC only · a 2nd producer loses **~1.5%** | `NonVolatile` — broken |
+| `LockBased` — **3.1M ops/s** · **3–4×**, and only for SPSC | `FastPath` — broken · two of four never earned a number |
+
+</div>
+
 <v-click>
-<div class="callout green big-callout">
-<mdi-rocket class="ico-green" />&nbsp;
-Lock-free volatile:&nbsp;<strong>3–4× higher throughput</strong>&nbsp; — for SPSC.
-And&nbsp;<em>only</em>&nbsp;for SPSC: add a second producer and it silently loses&nbsp;<strong>~1.5%</strong>&nbsp;of writes.
+<div class="callout green">
+<mdi-scale-balance class="ico-green" />&nbsp;
+<strong>Structurally cannot</strong>&nbsp; tell you whether the code is correct. JMH measures whatever you hand it — broken or not.
 </div>
 </v-click>
 
