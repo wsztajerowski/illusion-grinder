@@ -428,62 +428,6 @@ if (buffer[readPosition] == null)
 </v-click>
 
 ---
-layout: two-cols
----
-
-# What Fray Finds — Spurious Wakeup
-
-<div class="slide-subtitle">A fifth buffer — off the interface on purpose. It blocks:
-<code>take()</code> / <code>put()</code>, not <code>offer()</code> / <code>poll()</code>.
-Different contract, so it never sat the four-implementation exam.</div>
-
-```java
-public E take() {
-  lock.lock();
-  try {
-    if (buffer[readPos] == null) { // ← if, not while!
-      notEmpty.await();
-    }
-    E elem = buffer[readPos]; // null on spurious wakeup
-    // ...
-    return elem;              // ← silently null
-  } finally { lock.unlock(); }
-}
-```
-
-::right::
-
-<v-click>
-
-**The schedule Fray triggers:**
-
-```
-await() returns early 👻
-  → slot still empty
-  → take() returns null
-  → 💥 null leaks to the consumer
-```
-</v-click>
-
-<v-click>
-<div class="callout purple">
-Guard <code>Condition.await()</code> with <code>while</code>, not <code>if</code>.
-</div>
-</v-click>
-
-<v-click>
-
-```java
-// ❌ Unsafe — one spurious wakeup is enough
-if (isEmpty()) condition.await();
-
-// ✅ Correct — re-check after every wakeup
-while (isEmpty()) condition.await();
-```
-
-</v-click>
-
----
 
 # Deterministic Replay <mdi-replay class="ico-purple inline-ico" />
 
@@ -514,33 +458,6 @@ java.lang.NullPointerException
 Without the recording the bug is gone — *with it, attach a debugger and step the exact switches.*
 
 </v-click>
-
----
-hide: true
----
-
-# A Footgun in the Config <mdi-foot-print class="ico-yellow inline-ico" />
-
-By default, Fray uses a shared report directory for all test outputs and wipes it before each run.
-Every test class **nukes** the previous test's recording. <mdi-bomb class="ico-red inline-ico" />
-
-**The cure:**
-
-```xml
-<plugin>
-  <groupId>org.apache.maven.plugins</groupId>
-  <artifactId>maven-surefire-plugin</artifactId>
-  <configuration>
-    <systemPropertyVariables>
-      <fray.organize.by.test>true</fray.organize.by.test>
-    </systemPropertyVariables>
-  </configuration>
-</plugin>
-```
-
-<div class="callout yellow">
-Lose one bug report and you'll never re-roll the same dice again. Save them all.
-</div>
 
 ---
 
@@ -934,19 +851,6 @@ layout: section
 </div>
 
 ---
-hide: true
----
-
-# When to Reach for Which Tool
-
-| Symptom / Goal | Reach for |
-|---|---|
-| <mdi-check-circle class="ico-blue inline-ico" /> Functional correctness & regression safety | **JUnit** |
-| <mdi-shuffle-variant class="ico-purple inline-ico" /> Scheduling bugs (races, deadlocks, ordering) | **Fray** |
-| <mdi-chip class="ico-orange inline-ico" /> JMM bugs (visibility, reordering, atomicity) | **jcstress** |
-| <mdi-speedometer class="ico-green inline-ico" /> Throughput / latency / perf regressions | **JMH** |
-
----
 
 # What Each Circle Costs <mdi-timer-outline class="ico-green inline-ico" />
 
@@ -1059,3 +963,105 @@ The Illusion Grinder - Four circles of testing hell for concurrent Java
 </div>
 
 </div>
+
+---
+layout: section
+---
+
+<div class="section-eyebrow"><mdi-bookmark-multiple /> Appendix</div>
+
+# Appendix
+## *The slides that did not make the cut. Ask, and we'll jump to one.*
+
+---
+
+# When to Reach for Which Tool
+
+| Symptom / Goal | Reach for |
+|---|---|
+| <mdi-check-circle class="ico-blue inline-ico" /> Functional correctness & regression safety | **JUnit** |
+| <mdi-shuffle-variant class="ico-purple inline-ico" /> Scheduling bugs (races, deadlocks, ordering) | **Fray** |
+| <mdi-chip class="ico-orange inline-ico" /> JMM bugs (visibility, reordering, atomicity) | **jcstress** |
+| <mdi-speedometer class="ico-green inline-ico" /> Throughput / latency / perf regressions | **JMH** |
+
+---
+layout: two-cols
+---
+
+# What Fray Finds — Spurious Wakeup
+
+<div class="slide-subtitle">A fifth buffer — off the interface on purpose. It blocks:
+<code>take()</code> / <code>put()</code>, not <code>offer()</code> / <code>poll()</code>.
+Different contract, so it never sat the four-implementation exam.</div>
+
+```java
+public E take() {
+  lock.lock();
+  try {
+    if (buffer[readPos] == null) { // ← if, not while!
+      notEmpty.await();
+    }
+    E elem = buffer[readPos]; // null on spurious wakeup
+    // ...
+    return elem;              // ← silently null
+  } finally { lock.unlock(); }
+}
+```
+
+::right::
+
+<v-click>
+
+**The schedule Fray triggers:**
+
+```
+await() returns early 👻
+  → slot still empty
+  → take() returns null
+  → 💥 null leaks to the consumer
+```
+</v-click>
+
+<v-click>
+<div class="callout purple">
+Guard <code>Condition.await()</code> with <code>while</code>, not <code>if</code>.
+</div>
+</v-click>
+
+<v-click>
+
+```java
+// ❌ Unsafe — one spurious wakeup is enough
+if (isEmpty()) condition.await();
+
+// ✅ Correct — re-check after every wakeup
+while (isEmpty()) condition.await();
+```
+
+</v-click>
+
+---
+
+# A Footgun in the Config <mdi-foot-print class="ico-yellow inline-ico" />
+
+By default, Fray uses a shared report directory for all test outputs and wipes it before each run.
+Every test class **nukes** the previous test's recording. <mdi-bomb class="ico-red inline-ico" />
+
+**The cure:**
+
+```xml
+<plugin>
+  <groupId>org.apache.maven.plugins</groupId>
+  <artifactId>maven-surefire-plugin</artifactId>
+  <configuration>
+    <systemPropertyVariables>
+      <fray.organize.by.test>true</fray.organize.by.test>
+    </systemPropertyVariables>
+  </configuration>
+</plugin>
+```
+
+<div class="callout yellow">
+Lose one bug report and you'll never re-roll the same dice again. Save them all.
+</div>
+
