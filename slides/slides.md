@@ -566,12 +566,9 @@ class: section-jcstress
 
 ```java
 @JCStressTest
-@Outcome(id = "1, 1, 0", expect = Expect.ACCEPTABLE,
-  desc = "Producer offers, then consumer polls it ✅")
-@Outcome(id = "1, 0, 1", expect = Expect.ACCEPTABLE,
-  desc = "Consumer polls before producer offers ✅")
-@Outcome(id = "1, 0, 0", expect = Expect.FORBIDDEN,
-  desc = "Producer offered… consumer never saw it 💥 (visibility bug)")
+@Outcome(id = "1, 1, 0", expect = Expect.ACCEPTABLE, desc = "Producer offers, then consumer polls it ✅")
+@Outcome(id = "1, 0, 1", expect = Expect.ACCEPTABLE, desc = "Consumer polls before producer offers ✅")
+@Outcome(id = "1, 0, 0", expect = Expect.FORBIDDEN, desc = "Producer offered… consumer never saw it 💥")
 @State
 public class NonVolatileSpscLamportBufferJcstressTest {
   private final LamportBuffer<Integer> queue = NonVolatileLamportBuffer.createBuffer(Integer.class, 2);
@@ -661,12 +658,6 @@ Welcome to "works on my machine" at 0.01% frequency.
 </v-click>
 
 ---
-layout: center
----
-
-<img src="/src/resources/jcstress-result.png" alt="jcstress result output" style="max-height: 80vh; margin: 0 auto; border-radius: 8px; box-shadow: 0 8px 32px rgba(251,146,60,0.25);" />
-
----
 layout: two-cols
 ---
 
@@ -752,7 +743,7 @@ We brought a second producer.
 | <mdi-arm-flex class="ico-orange inline-ico" /> Strengths | <mdi-eye-off-outline class="ico-red inline-ico" /> Blind spots |
 |---|---|
 | **No instrumentation.** Runs your real bytecode, on any JVM | **Struggles with I/O-intensive code.** Millions of concurrent runs exhaust the open-file limit |
-| **Catches JMM bugs** — the visibility failure Fray structurally cannot see, plus lost updates under two producers | **Orders of magnitude slower than Fray.** Millions of iterations per test, not a thousand schedules |
+| **Catches JMM bugs** — the visibility failure Fray structurally cannot see, plus lost updates under two producers | **Results are HTML only.** A report to read, not something a pipeline can assert on — there is no machine-readable output |
 
 </div>
 
@@ -761,6 +752,12 @@ We brought a second producer.
 <span class="verdict-label">Verdict:</span> <em>Hardware reality, yes. Coverage, never. Two tools, not one.</em> <mdi-arrow-down-bold-circle class="ico-green inline-ico" />
 </div>
 </v-click>
+
+---
+layout: center
+---
+
+<img src="/src/resources/jcstress-result.png" alt="jcstress result output" style="max-height: 80vh; margin: 0 auto; border-radius: 8px; box-shadow: 0 8px 32px rgba(251,146,60,0.25);" />
 
 ---
 layout: section
@@ -807,15 +804,21 @@ Without them you are measuring nothing — and accurate numbers for broken code 
 **1 producer + 1 consumer — same topology, two implementations:**
 
 ```
-Benchmark                             (capacity)  (implementation)   Mode  Cnt         Score         Error  Units
-JmhBenchmark.applesToApples                   64          VOLATILE  thrpt   10  12806160,712 ±  138235,768  ops/s
-JmhBenchmark.applesToApples                   64              LOCK  thrpt   10   3119315,813 ±  205707,745  ops/s
+Benchmark                             (capacity)  (implementation)   Mode         Score  Units
+JmhBenchmark.applesToApples                   64          VOLATILE  thrpt  12806160,712  ops/s
+JmhBenchmark.applesToApples:consumer          64          VOLATILE  thrpt   6388150,897  ops/s
+JmhBenchmark.applesToApples:producer          64          VOLATILE  thrpt   6418009,816  ops/s
+JmhBenchmark.applesToApples                   64              LOCK  thrpt   3119315,813  ops/s
+JmhBenchmark.applesToApples:consumer          64              LOCK  thrpt   1559657,794  ops/s
+JmhBenchmark.applesToApples:producer          64              LOCK  thrpt   1559658,019  ops/s
+JmhBenchmark.applesToApples                 1024          VOLATILE  thrpt  14877651,416  ops/s
+JmhBenchmark.applesToApples                 1024              LOCK  thrpt   5413892,148  ops/s
 ```
 
 <v-click>
 <div class="callout green big-callout">
 <mdi-rocket class="ico-green" />&nbsp;
-<strong>Lock-free wins on this box</strong>&nbsp;— treat the ratio as an order of magnitude, not a promise.
+<strong>Lock-free wins on this box (with 3–4× higher throughput)</strong>&nbsp;— treat the ratio as an order of magnitude, not a promise.
 </div>
 </v-click>
 
