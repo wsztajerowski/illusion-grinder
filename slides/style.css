@@ -197,7 +197,12 @@
 /* ── Buffer visualization ────────────────────────────────────────── */
 .buffer-viz {
   margin-top: 0.5rem;
-  font-size: 0.95em;
+  font-size: 0.6em;
+  line-height: 1.35;
+  padding: 0.9rem 1.1rem;
+  background: rgba(255, 255, 255, 0.04);
+  border-radius: 6px;
+  color: rgba(255, 255, 255, 0.82);
 }
 
 /* ── Verdict line ────────────────────────────────────────────────── */
@@ -312,4 +317,12 @@
    columns butt together. Give them a little breathing room. */
 .slidev-layout.two-columns {
   column-gap: 2rem;
+}
+
+.cover-byline {
+  margin-top: 0.7rem;
+  font-size: 1.1em;
+  font-weight: 500;
+  color: rgba(255, 255, 255, 0.88);
+  letter-spacing: 0.03em;
 }
