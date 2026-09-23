@@ -352,6 +352,8 @@ class: section-fray
 </v-clicks>
 
 ---
+layout: two-cols
+---
 
 # A Fray Test
 
@@ -360,8 +362,10 @@ class: section-fray
 void twoConsumersMustNotReadSameElement() {
   buffer.offer(1);
   buffer.offer(2);
-  Thread t1 = new Thread(() -> results.add(buffer.poll()));
-  Thread t2 = new Thread(() -> results.add(buffer.poll()));
+  Thread t1 = new Thread(
+      () -> results.add(buffer.poll()));
+  Thread t2 = new Thread(
+      () -> results.add(buffer.poll()));
   t1.start(); t2.start();
   t1.join();  t2.join();
   assertThat(results)
@@ -373,9 +377,29 @@ void twoConsumersMustNotReadSameElement() {
 ```
 
 <div class="callout purple">
-<mdi-magic-staff class="ico-purple" />&nbsp;
+<mdi-magic-staff class="ico-purple" /> 
 Looks like an ordinary JUnit test. Fray hijacks the scheduler underneath.
 </div>
+
+::right::
+
+<v-click>
+
+**Every run — a different schedule** <mdi-shuffle-variant class="ico-purple inline-ico" />
+
+<pre class="buffer-viz">
+Run #1:     T1 → T1 → T2 → T1 → T2
+Run #2:     T2 → T1 → T2 → T2 → T1
+Run #3:     T1 → T2 → T2 → T1 → T1
+...
+Run #1000:  a new sample, every iteration
+</pre>
+
+<div class="subtle-note">
+<code>@ConcurrencyTest</code> runs <strong>1000 iterations by default</strong> — a thousand different schedules of the same test body.
+</div>
+
+</v-click>
 
 ---
 layout: two-cols
@@ -449,7 +473,7 @@ java.lang.NullPointerException
     at java.base/java.util.Optional.of(Optional.java:113)
     at pl.wsztajerowski.demo.lamport.mpmc.FastPathLamportBuffer.poll(FastPathLamportBuffer.java:46)
     at pl.wsztajerowski.demo.lamport.fray.edgecase.FastPathLamportBufferFrayTest
-        .twoConsumersOnSingleElementMustNotCrash(FastPathLamportBufferFrayTest.java:37)
+        .lambda$twoConsumersOnSingleElementMustNotCrash$1(FastPathLamportBufferFrayTest.java:40)
 ```
 
 <div class="subtle-note">The NPE is <code>Optional.of(null)</code> — the same line 46 as the exception we opened with.</div>
