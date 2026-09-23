@@ -318,3 +318,11 @@
 .slidev-layout.two-columns {
   column-gap: 2rem;
 }
+
+.cover-byline {
+  margin-top: 0.7rem;
+  font-size: 1.1em;
+  font-weight: 500;
+  color: rgba(255, 255, 255, 0.88);
+  letter-spacing: 0.03em;
+}

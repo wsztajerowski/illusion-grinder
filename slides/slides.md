@@ -23,6 +23,8 @@ class: text-center cover-slide
 <em>Four circles of testing hell for concurrent Java</em>
 </p>
 
+<p class="cover-byline">by Wiktor Sztajerowski</p>
+
 <div class="cover-tools-row">
   <span class="chip blue"><mdi-test-tube /> JUnit</span>
   <span class="chip purple"><mdi-graph-outline /> Fray</span>
@@ -114,14 +116,13 @@ layout: section
 ## *The deceptively simple data structure we're about to torture.*
 
 ---
+layout: two-cols
+---
 
 # The Algorithm
 
-<mdi-account-tie class="ico-blue inline-ico" /> **Leslie Lamport's wait-free SPSC queue (1983)** — two cursors, **no locks, no CAS** <mdi-flash class="ico-yellow inline-ico" />
+<mdi-account-tie class="ico-blue inline-ico" /> **Leslie Lamport's wait-free SPSC queue** — two cursors, **no locks, no CAS** <mdi-flash class="ico-yellow inline-ico" />
 
-<div class="two-col-code">
-
-<v-click>
 
 <pre class="buffer-viz">
   capacity = 4
@@ -134,7 +135,7 @@ layout: section
    (consumer)  (producer)
 </pre>
 
-</v-click>
+::right::
 
 <v-click>
 
@@ -151,12 +152,18 @@ function poll():
 
 </v-click>
 
-</div>
-
 <v-click>
-<div class="callout purple">
-<mdi-magnify /> &nbsp;<code>offer()</code> is the mirror image. Spot the bug? Neither did I — neither did my unit tests.
-</div>
+
+```
+function offer(element):
+  w ← writePos
+  if buffer[w] != null:
+    return false                   // full
+  buffer[w] ← element
+  writePos ← (w + 1) mod capacity  // publish
+  return true
+```
+
 </v-click>
 
 ---
@@ -234,13 +241,15 @@ layout: two-cols
 
 - Single-threaded — no concurrency
 - Same contract suite runs against **all four implementations**
-- Fast, deterministic, always-on
+
+<v-click>
 
 **What gets tested:**
 
 - <mdi-arrow-right-thin /> Basic offer / poll · FIFO ordering
 - <mdi-sync /> Wrap-around · capacity enforcement
 - <mdi-counter /> Size tracking · null rejection
+</v-click>
 
 ::right::
 
@@ -283,15 +292,13 @@ Run the full suite against all four implementations — including the deliberate
 [INFO] BUILD SUCCESS
 ```
 
-<div class="callout green">
+<div v-click class="callout green">
 <mdi-party-popper class="ico-green" />&nbsp; All green. Time to deploy. What could possibly go wrong?
 </div>
 
-<v-click>
-<div class="callout red">
+<div v-click class="callout red">
 <mdi-skull class="ico-red" />&nbsp; Two implementations are broken. Your CI just&nbsp; <em>lied to your face</em>.
 </div>
-</v-click>
 
 ---
 
@@ -299,24 +306,23 @@ Run the full suite against all four implementations — including the deliberate
 
 <div class="vs-table">
 
-| <mdi-magnify class="ico-blue inline-ico" /> Caught | <mdi-run class="ico-red inline-ico" /> Walked free |
+| <mdi-arm-flex class="ico-blue inline-ico" /> Strengths | <mdi-eye-off-outline class="ico-red inline-ico" /> Blind spots |
 |---|---|
-| **Nothing.** It was never going to. | **All four.** 68 / 68 green. |
-| A single-threaded test cannot construct a race. | `Volatile` · `NonVolatile` · `LockBased` · `FastPath` |
+| **Simple.** Every developer already knows it — no new syntax, no new runner | **Cannot catch concurrency bugs.** One thread cannot construct a race, so no race can fail |
+| **Fast.** Cheap enough to run on every save | Which is why `NonVolatile` and `FastPath` pass every one — and are still broken |
 
 </div>
 
 <v-click>
 <div class="callout blue">
-<mdi-eye-off class="ico-blue" />&nbsp;
-<strong>Structurally cannot</strong>&nbsp; start a second thread — no race, no failure, by construction.<br>&nbsp;
-Write contract tests first and keep them always. Just never mistake a green suite for a concurrency proof.
+<mdi-lightbulb class="ico-blue" />&nbsp;
+Write units first and keep them always — just never mistake a green suite for a concurrency proof.
 </div>
 </v-click>
 
 <v-click>
 <div class="verdict">
-<span class="verdict-label">Score:</span> 0 of 4 &nbsp;·&nbsp; <span class="verdict-label">Verdict:</span> <em>Necessary. Insufficient. On to the next circle.</em> <mdi-arrow-down-bold-circle class="ico-purple inline-ico" />
+<span class="verdict-label">Verdict:</span> <em>Necessary. Insufficient. On to the next circle.</em> <mdi-arrow-down-bold-circle class="ico-purple inline-ico" />
 </div>
 </v-click>
 
@@ -358,8 +364,11 @@ void twoConsumersMustNotReadSameElement() {
   Thread t2 = new Thread(() -> results.add(buffer.poll()));
   t1.start(); t2.start();
   t1.join();  t2.join();
-  assertThat(results).containsExactlyInAnyOrder(
-    Optional.of(1), Optional.of(2));
+  assertThat(results)
+    .containsExactlyInAnyOrder(
+      Optional.of(1), 
+      Optional.of(2)
+    );
 }
 ```
 
@@ -374,7 +383,7 @@ layout: two-cols
 
 # What Fray Finds — Unlocked Fast-path
 
-<div class="slide-subtitle">Enter <code>FastPathLamportBuffer</code> — the optimisation we promised in Circle I.</div>
+<div class="slide-subtitle">Enter <code>FastPathLamportBuffer</code> </div>
 
 ```java
 public Optional<E> poll() {
@@ -389,8 +398,6 @@ public Optional<E> poll() {
 }
 ```
 
-::right::
-
 <v-click>
 
 **The interleaving Fray constructs:** <mdi-format-list-numbered class="ico-purple inline-ico" />
@@ -403,29 +410,31 @@ T2: acquires lock, reads... null → 💥 NPE
 ```
 </v-click>
 
-<v-click>
-<div class="callout purple">
+::right::
+
+<div v-click class="callout purple">
 <mdi-alert-octagon class="ico-purple" />&nbsp;
 Check-then-act without a lock is a race.<br>
 <strong>This is the exception we opened with.</strong> The optimisation that wasn't.
 </div>
-</v-click>
 
-<v-click>
-
+<div v-click class="mem-diagram bad">
 ```java
-// ❌ FastPathLamportBuffer — check, then lock
+// ❌ check, then lock
 if (buffer[readPosition] == null)
   return Optional.empty();
 lock.lock();
+```
+</div>
 
-// ✅ LockBasedLamportBuffer — lock, then check
+<div v-click class="mem-diagram good">
+```java
+// ✅ lock, then check
 lock.lock();
 if (buffer[readPosition] == null)
   return Optional.empty();
 ```
-
-</v-click>
+</div>
 
 ---
 
@@ -482,26 +491,23 @@ BUILD SUCCESS
 
 <div class="vs-table">
 
-| <mdi-magnify class="ico-purple inline-ico" /> Caught | <mdi-run class="ico-red inline-ico" /> Walked free |
+| <mdi-arm-flex class="ico-purple inline-ico" /> Strengths | <mdi-eye-off-outline class="ico-red inline-ico" /> Blind spots |
 |---|---|
-| `FastPath` — NPE at **iteration 4 of 1000**, replayable | `NonVolatile` — 2000 schedules, all green, **still broken** |
-| `Conditional take()` — null from a spurious wakeup, **iteration 1** · *appendix* | `Volatile` with two producers — not a scheduling bug |
+| **Reads like JUnit.** `@ConcurrencyTest` on an ordinary test body — no new syntax, no new runner | **Cannot catch Java Memory Model issues.** Every schedule it explores is sequentially consistent — `NonVolatile` stays green |
+| **A different interleaving every run** — found `FastPath`'s NPE within the first handful of schedules, replayable under a debugger | **Needs an instrumented JVM.** The plugin builds a whole instrumented JDK image before anything runs |
 
 </div>
 
 <v-click>
 <div class="callout purple">
-
-**Fray proves:** "No thread ordering breaks my logic." <mdi-check class="ico-green inline-ico" /><br>
-**Fray cannot prove:** "The JVM / CPU will not reorder my memory accesses." <mdi-close class="ico-red inline-ico" /><br>
-Every schedule it explores is sequentially consistent — memory visibility is **structurally invisible** to it.
-
+<mdi-dice-multiple class="ico-purple" />&nbsp;
+A green run is&nbsp;<strong>1000 sampled schedules</strong>&nbsp;— not a proof — Fray gives probability, not exhaustiveness.
 </div>
 </v-click>
 
 <v-click>
 <div class="verdict">
-<span class="verdict-label">Score:</span> 2 of 4 &nbsp;·&nbsp; <span class="verdict-label">Verdict:</span> <em>Logic, yes. Hardware reality, no. Descend further.</em> <mdi-arrow-down-bold-circle class="ico-orange inline-ico" />
+<span class="verdict-label">Verdict:</span> <em>Logic, yes. Hardware reality, no. Descend further.</em> <mdi-arrow-down-bold-circle class="ico-orange inline-ico" />
 </div>
 </v-click>
 
@@ -719,26 +725,16 @@ We brought a second producer.
 
 <div class="vs-table">
 
-| <mdi-magnify class="ico-orange inline-ico" /> Caught | <mdi-run class="ico-red inline-ico" /> Walked free |
+| <mdi-arm-flex class="ico-orange inline-ico" /> Strengths | <mdi-eye-off-outline class="ico-red inline-ico" /> Blind spots |
 |---|---|
-| `NonVolatile` — 35,222 of 655M runs, **0.005%**. The bug Fray structurally cannot see | **Nothing.** |
-| `Volatile` @ 2 producers — **~1.5%** lost · `FastPath` — **1.1%** | Every bug in the lineup is now visible. |
+| **No instrumentation.** Runs your real bytecode, on any JVM | **Struggles with I/O-intensive code.** Millions of concurrent runs exhaust the open-file limit |
+| **Catches JMM bugs** — the visibility failure Fray structurally cannot see, plus lost updates under two producers | **Orders of magnitude slower than Fray.** Millions of iterations per test, not a thousand schedules |
 
 </div>
-
-<v-click>
-<div class="callout orange">
-
-**jcstress proves:** "This outcome really happens on real hardware." <mdi-check class="ico-green inline-ico" /><br>
-**jcstress cannot prove:** "That outcome never happens." <mdi-close class="ico-red inline-ico" /><br>
-It cannot find an outcome you never declared with <code>@Outcome</code>. Shorten the run and the 0.005% row disappears — same code, green report.
-
-</div>
-</v-click>
 
 <v-click>
 <div class="verdict">
-<span class="verdict-label">Score:</span> 4 of 4 &nbsp;·&nbsp; <span class="verdict-label">Verdict:</span> <em>Hardware reality, yes. Coverage, never. Two tools, not one.</em> <mdi-arrow-down-bold-circle class="ico-green inline-ico" />
+<span class="verdict-label">Verdict:</span> <em>Hardware reality, yes. Coverage, never. Two tools, not one.</em> <mdi-arrow-down-bold-circle class="ico-green inline-ico" />
 </div>
 </v-click>
 
@@ -792,25 +788,36 @@ JmhBenchmark.applesToApples                   64          VOLATILE  thrpt   10  
 JmhBenchmark.applesToApples                   64              LOCK  thrpt   10   3119315,813 ±  205707,745  ops/s
 ```
 
-<div class="vs-table">
-
-| <mdi-speedometer class="ico-green inline-ico" /> Measured | <mdi-cancel class="ico-red inline-ico" /> Refused the scale |
-|---|---|
-| `Volatile` — **12.8M ops/s**, SPSC only · a 2nd producer loses **~1.5%** | `NonVolatile` — broken |
-| `LockBased` — **3.1M ops/s** · **3–4×**, and only for SPSC | `FastPath` — broken · two of four never earned a number |
-
-</div>
-
 <v-click>
-<div class="callout green">
-<mdi-scale-balance class="ico-green" />&nbsp;
-<strong>Structurally cannot</strong>&nbsp; tell you whether the code is correct. JMH measures whatever you hand it — broken or not.
+<div class="callout green big-callout">
+<mdi-rocket class="ico-green" />&nbsp;
+<strong>Lock-free wins on this box</strong>&nbsp;— treat the ratio as an order of magnitude, not a promise.
 </div>
 </v-click>
 
 <v-click>
+<div class="callout orange">
+<mdi-alert class="ico-orange" />&nbsp;
+And&nbsp;<em>only</em>&nbsp;for SPSC: add a second producer and it silently loses writes.
+</div>
+</v-click>
+
+---
+
+# Circle IV Closes — JMH
+
+<div class="vs-table">
+
+| <mdi-arm-flex class="ico-green inline-ico" /> Strengths | <mdi-eye-off-outline class="ico-red inline-ico" /> Blind spots |
+|---|---|
+| **Stops the JIT lying.** `Blackhole` keeps "dead" work alive — no dead-code elimination, no loop hoisting | **Needs a repeatable environment.** Numbers compare only within one setup — same CPU, same memory, nothing else running |
+| **Warmup and fork isolation** — steady-state numbers, not a cold JVM | **Slow.** The longest run in the deck — warmup × iterations × forks × params |
+
+</div>
+
+<v-click>
 <div class="verdict">
-<span class="verdict-label">Verdict:</span> <em>One topology, one machine, one JDK — for code you had already proven correct. </em>
+<span class="verdict-label">Verdict:</span> <em>Measure last — and only what you have already proven correct.</em> <mdi-scale-balance class="ico-green inline-ico" />
 </div>
 </v-click>
 
@@ -856,26 +863,21 @@ layout: section
 
 <div class="slide-subtitle">Absolute times are a property of <em>your</em> suite on <em>your</em> machine. What is stable is <strong>what drives them</strong>.</div>
 
-| Layer | Cost grows with | Where it belongs |
-|---|---|---|
-| <mdi-test-tube class="ico-blue inline-ico" /> **JUnit** | number of tests | every save |
-| <mdi-graph-outline class="ico-purple inline-ico" /> **Fray** | tests × **iterations** (1000 by default) | every PR |
-| <mdi-pulse class="ico-orange inline-ico" /> **jcstress** | tests × **configurations** × time each — and configurations multiply | every PR while small, nightly as it grows |
-| <mdi-speedometer class="ico-green inline-ico" /> **JMH** | params × **forks** × iterations × time | release, on a quiet machine |
-
----
-
-# What Each Circle Costs <mdi-timer-outline class="ico-green inline-ico" />
+| Layer | Cost grows with | Local numbers | Where it belongs |
+|---|---|---|---|
+| <mdi-test-tube class="ico-blue inline-ico" /> **JUnit** | number of tests | 0.34 s | every change |
+| <mdi-graph-outline class="ico-purple inline-ico" /> **Fray** | tests × **iterations** | 5.4 s | every PR |
+| <mdi-pulse class="ico-orange inline-ico" /> **jcstress** | tests × **configurations** × time | 4 m 21 s | PR while small, nightly later |
+| <mdi-speedometer class="ico-green inline-ico" /> **JMH** | params × **forks** × iterations | 13 m 25 s | release, on demand |
 
 <div class="subtle-note">
-This repo, one laptop: 0.34 s · 5.4 s · 4 m 21 s · 13 m 25 s — one run each, JMH at 2 forks for one of three
-benchmark classes. An anchor, not a benchmark.
+Local numbers: one run each, one laptop. An example of the order of magnitude, nothing more.
 </div>
 
 <v-click>
 <div class="callout orange">
 <mdi-alert class="ico-orange" />&nbsp;
-The two probabilistic tools have&nbsp;<strong>no natural stopping point</strong>&nbsp;You decide how long to look —
+The two probabilistic tools have&nbsp;<strong>no natural stopping point</strong>&nbsp;— you decide how long to look,
 and a shorter run is a weaker claim, not a faster test.
 </div>
 </v-click>
@@ -910,6 +912,9 @@ layout: two-cols
 - [Fray](https://github.com/cmu-pasta/fray) — CMU PASTA Lab / Microsoft Research
 - [jcstress](https://openjdk.org/projects/code-tools/jcstress/) — OpenJDK
 - [JMH](https://github.com/openjdk/jmh) — OpenJDK
+
+<br />
+<br />
 
 **Demo repository** <mdi-github class="ico-purple inline-ico" />
 
@@ -953,6 +958,7 @@ Now go look at your "well-tested" concurrent code.<br>
 
 <span class="footer-title">
 The Illusion Grinder - Four circles of testing hell for concurrent Java
+<br /> by Wiktor Sztajerowski
 </span>
 
 </div>
@@ -961,7 +967,6 @@ The Illusion Grinder - Four circles of testing hell for concurrent Java
   <img src="/src/resources/poll-qr.png" alt="QR code linking to the post-talk feedback poll" />
   <span class="qr-caption">Feedback poll <mdi-clipboard-text-outline class="ico-green inline-ico" /></span>
 </div>
-
 </div>
 
 ---
@@ -1064,4 +1069,3 @@ Every test class **nukes** the previous test's recording. <mdi-bomb class="ico-r
 <div class="callout yellow">
 Lose one bug report and you'll never re-roll the same dice again. Save them all.
 </div>
-
