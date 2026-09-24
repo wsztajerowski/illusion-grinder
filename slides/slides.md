@@ -213,8 +213,8 @@ layout: center
 # The Catch <mdi-hook class="ico-yellow inline-ico" />
 
 <div class="callout yellow big-callout">
-All four pass unit tests.<br>
-<strong>Two of them are actually broken.</strong>
+<div>All four pass unit tests.<br>
+<strong>Two of them are actually broken.</strong></div>
 </div>
 
 <div v-click class="subtle-note">
@@ -506,7 +506,7 @@ BUILD SUCCESS
 ```
 
 <div class="callout yellow">
-2 tests × 1000 schedules each. Zero failures. <strong>And the code is still broken.</strong>
+2 tests × 1000 schedules each. Zero failures.&nbsp;<strong>And the code is still broken.</strong>
 </div>
 
 ---
@@ -720,7 +720,7 @@ We brought a second producer.
 | **Controls** | Thread scheduling | Nothing — lets OS/CPU/JIT decide |
 | **Finds** | Logic races · deadlocks | Visibility bugs · reorderings |
 | **Deterministic replay** | <mdi-check-circle class="ico-green" /> Yes | <mdi-close-circle class="ico-red" /> No |
-| **Blind spot** | JMM / hardware reorderings | Scenarios you didn't think to model |
+| **Blind spot** | JMM / hardware reorderings | I/O-bound code · HTML-only results |
 | **Vibe** | A patient sadist | A drunk physicist |
 
 </div>
@@ -729,7 +729,7 @@ We brought a second producer.
 <div class="callout orange">
 
 <code>NonVolatileLamportBuffer</code> &nbsp;<mdi-arrow-right class="inline-ico" />&nbsp; passes Fray, fails jcstress — Fray <em>structurally</em> cannot see it.<br>
-<code>FastPathLamportBuffer</code> &nbsp;<mdi-arrow-right class="inline-ico" />&nbsp; <em>both</em> catch it (jcstress at 1.1%) — but only with a two-consumer test.
+<code>FastPathLamportBuffer</code> &nbsp;<mdi-arrow-right class="inline-ico" />&nbsp; <em>both</em> catch it — but only with a two-consumer test.
 
 </div>
 </v-click>
