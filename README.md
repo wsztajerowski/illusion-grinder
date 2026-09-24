@@ -67,15 +67,15 @@ Plus `ConditionalLamportBuffer` (also in `03-lamport-lock`): a blocking
 
 | Bug | JUnit | Fray | jcstress |
 |---|---|---|---|
-| Unlocked fast path, no re-check (`FastPathLamportBuffer`) | passes | **catches** — NPE at iteration 4 | **catches** — NPE in 1.1% of 580m samples, but only with a two-consumer test |
+| Unlocked fast path, no re-check (`FastPathLamportBuffer`) | passes | **catches** — NPE at iteration 2 | **catches** — NPE in 1.1% of 580m samples, but only with a two-consumer test |
 | `if` instead of `while` around `await()` (`ConditionalLamportBuffer`) | passes | **catches** — assertion failure at iteration 1 | not observed by the current test |
 | TOCTOU in client code over a thread-safe object | passes | **catches** | no test at this layer |
 | Two producers on an SPSC buffer (`VolatileLamportBuffer`) | passes | catches | **catches** — lost update in 1.48% of 583m samples, plus 0.51% spurious "full" |
 | Missing `volatile` (`NonVolatileLamportBuffer`) | passes | **passes** | **catches** — ~35k lost writes in 655m samples |
 
 Read the two middle columns against each other. Fray finds the fast-path NPE
-*by construction*, on the fourth schedule it tries, from an ordinary
-two-consumer test, and hands back a recording that replays it deterministically.
+*by construction*, within the first handful of schedules it tries, from an
+ordinary two-consumer test, and hands back a recording that replays it deterministically.
 jcstress finds the same NPE at 1.1% — but only once you write a test shaped like
 the bug: two consumers, one pre-filled element, and the NPE caught so it becomes
 an outcome instead of an aborted run. The original single-consumer test could
@@ -105,7 +105,10 @@ demos/          multi-module Maven project (Java 25) — see demos/README.md
   07-jmh                     JMH throughput benchmarks
   results/                   recorded fray / jcstress / jmh output, kept in git
 slides/         Slidev presentation — see slides/README.md
-docs/           talk abstract
+  slides.md                  the whole deck, 42 slides
+  style.css                  custom styling
+  tools/slidelist.py         prints slide numbering for `--range`
+docs/           talk abstracts (en / pl) and post-talk poll templates
 ```
 
 ## Prerequisites
@@ -255,13 +258,34 @@ mvn -f demos/pom.xml -pl 07-jmh            -am package && \
 ```bash
 cd slides
 npm install
-npm run dev      # http://localhost:3030
-npm run build    # static site into slides/dist/
-npm run export   # PDF
+
+npm run dev      # authoring loop, hot reload, http://localhost:3030
+npm run shots    # one PNG per slide into .shots/ — how you check the deck
+npm run export   # slides-export.pdf, 42 pages — handout and stage backup
+npm run build    # static site into slides/dist/ — for hosting
 ```
 
-Details: [`slides/README.md`](slides). The Polish-language talk abstract is in
-[`docs/abstract-pl.md`](docs/abstract-pl.md).
+`npm run shots` is the one worth knowing about. Content that reads fine in the
+Markdown routinely overflows the 16:9 frame, and neither the dev server nor the
+build will tell you: the whole deck renders to PNG in about 25 seconds, and you
+look. Narrow it with `-- --range 12-18`, or `-- --with-clicks` for one image per
+click step.
+
+```bash
+python3 tools/slidelist.py slides.md   # slide numbering, before using --range
+```
+
+`--range` counts only slides that render, so a single `hide: true` slide shifts
+every number after it. This prints both numbers side by side.
+
+`npm run export` produces a PDF that opens on any machine when the venue's
+projector, network or your Node install does not — worth generating before
+every talk. Click steps are flattened one page per slide; pass `-- --with-clicks`
+if the reveals matter.
+
+Details, including the two editing traps that render without an error:
+[`slides/README.md`](slides). Talk abstracts and the post-talk poll templates
+are in [`docs/`](docs).
 
 ## Recorded results
 
