@@ -1,0 +1,68 @@
+# Publishes the deck to GitHub Pages on every push to main that touches slides/.
+#
+#   https://wsztajerowski.github.io/illusion-grinder/            browse the deck
+#   https://wsztajerowski.github.io/illusion-grinder/slides.pdf  download it
+#
+# The PDF is built here rather than committed: it is a 1 MB binary that changes
+# on every edit, and `npm run export` strips the feedback-poll QR so the
+# downloadable copy never carries a link that goes stale after the talk.
+
+name: Publish slides
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - 'slides/**'
+      - '.github/workflows/publish-slides.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+# Never let two deploys race; drop superseded runs rather than queue them.
+concurrency:
+  group: pages
+  cancel-in-progress: true
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: slides
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: npm
+          cache-dependency-path: slides/package-lock.json
+
+      # playwright-chromium downloads its browser on install; the PDF export needs it.
+      - run: npm ci
+
+      # Project Pages are served from a sub-path, so the base must match the repo
+      # name or every asset 404s.
+      - run: npm run build -- --base /illusion-grinder/
+
+      - run: npm run export
+
+      - run: cp slides.pdf dist/slides.pdf
+
+      - uses: actions/upload-pages-artifact@v3
+        with:
+          path: slides/dist
+
+  deploy:
+    needs: build
+    runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - id: deployment
+        uses: actions/deploy-pages@v4

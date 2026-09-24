@@ -116,3 +116,6 @@ reports/
 *.swp
 *.swo
 *~
+
+# Slidev export scratch file (tools/export-pdf.mjs)
+.slides-print.md

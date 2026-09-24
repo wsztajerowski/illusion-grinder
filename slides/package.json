@@ -1,10 +1,10 @@
 {
-  "name": "systematic-concurrency-testing-slides",
+  "name": "illusion-grinder-slides",
   "private": true,
   "scripts": {
     "dev": "slidev",
     "build": "slidev build",
-    "export": "slidev export",
+    "export": "node tools/export-pdf.mjs",
     "shots": "slidev export --format png --output .shots"
   },
   "dependencies": {

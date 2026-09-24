@@ -80,21 +80,30 @@ shifts every number after it, so without this you will render the wrong frame
 and not notice. Adding or deleting a slide renumbers everything below it too —
 run this after any structural edit.
 
-### `npm run export` — for handouts and backups
+### `npm run export` — the downloadable PDF
 
 ```bash
-npm run export                     # slides-export.pdf, one page per slide
+npm run export                     # slides.pdf, one page per slide
 npm run export -- --with-clicks    # one page per click step
 ```
 
-Produces `slides/slides-export.pdf` (42 pages, ~1 MB). Installs Playwright's
-Chromium on first run.
+Produces `slides/slides.pdf` (42 pages, ~1 MB). Playwright's Chromium is
+downloaded on first `npm install`.
 
-Worth doing before every talk, for two reasons: a PDF opens on any machine when
-the venue's projector, network or your Node install does not, and it is the
-format conferences and attendees ask for afterwards. Note that click steps are
-flattened — each slide is one page in its final state — so pass `--with-clicks`
-if the reveals matter in a handout.
+This is not plain `slidev export` — it runs `tools/export-pdf.mjs`, which
+exports from a copy of the deck **with the feedback-poll QR code removed**. The
+QR points at a poll that goes stale days after the talk, so it belongs on the
+live screen and nowhere else; a PDF someone downloads next month should not
+carry a dead link. Slidev has no export-time conditional that would do this:
+`RenderContext` has no `print` value, and the exporter calls
+`emulateMedia({ media: 'screen' })`, so `@media print` never applies either.
+
+The script fails loudly if it cannot find `<div class="qr-block">` — if you
+restructure the thank-you slide, fix the script rather than let a stale QR ship.
+
+Worth generating before every talk anyway: a PDF opens on any machine when the
+venue's projector, network or your Node install does not. Click steps are
+flattened one page per slide; pass `-- --with-clicks` if the reveals matter.
 
 ### `npm run build` — for hosting
 
@@ -117,6 +126,29 @@ checkout. Not needed for presenting.
   arrangements fail to compile with `Invalid end tag`.
 * **Run `npm run shots` afterwards.** Both of the above render without an error
   and are only visible in the image.
+
+## Publishing
+
+Pushing to `main` with changes under `slides/` triggers
+[`.github/workflows/publish-slides.yml`](../.github/workflows/publish-slides.yml),
+which builds the deck and the PDF and deploys both to GitHub Pages:
+
+| URL | What |
+|---|---|
+| <https://wsztajerowski.github.io/illusion-grinder/> | the deck, navigable in a browser |
+| <https://wsztajerowski.github.io/illusion-grinder/slides.pdf> | the PDF, for download |
+
+The PDF is built in CI rather than committed — it is a 1 MB binary that changes
+on every edit, and `*.pdf` stays git-ignored.
+
+Two things that break this quietly if you change them:
+
+* **The base path.** A project Pages site is served from `/illusion-grinder/`,
+  so the workflow builds with `--base /illusion-grinder/`. Rename the repo and
+  every asset 404s until that flag matches.
+* **The QR strip.** `npm run export` is what removes the poll QR. If the
+  workflow ever calls `slidev export` directly, the published PDF will carry a
+  link that dies days after the talk.
 
 ## Deck structure
 

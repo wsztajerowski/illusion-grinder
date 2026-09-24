@@ -127,8 +127,8 @@ mvn -v
 ## Quick start
 
 ```bash
-git clone git@github.com:wsztajerowski/systematic-concurrency-testing.git
-cd systematic-concurrency-testing
+git clone git@github.com:wsztajerowski/illusion-grinder.git
+cd illusion-grinder
 
 # Build everything, fast (skips unit tests AND the long jcstress run)
 mvn -f demos/pom.xml clean install -DskipTests -Dexec.skip=true
@@ -261,7 +261,7 @@ npm install
 
 npm run dev      # authoring loop, hot reload, http://localhost:3030
 npm run shots    # one PNG per slide into .shots/ — how you check the deck
-npm run export   # slides-export.pdf, 42 pages — handout and stage backup
+npm run export   # slides.pdf, 42 pages — handout and stage backup
 npm run build    # static site into slides/dist/ — for hosting
 ```
 
@@ -280,8 +280,16 @@ every number after it. This prints both numbers side by side.
 
 `npm run export` produces a PDF that opens on any machine when the venue's
 projector, network or your Node install does not — worth generating before
-every talk. Click steps are flattened one page per slide; pass `-- --with-clicks`
-if the reveals matter.
+every talk. It exports from a copy of the deck with the feedback-poll QR
+removed, so a PDF downloaded weeks later carries no dead link. Click steps are
+flattened one page per slide; pass `-- --with-clicks` if the reveals matter.
+
+**Published on every push to `main`** that touches `slides/`:
+
+| URL | What |
+|---|---|
+| <https://wsztajerowski.github.io/illusion-grinder/> | the deck, navigable in a browser |
+| <https://wsztajerowski.github.io/illusion-grinder/slides.pdf> | the PDF, for download |
 
 Details, including the two editing traps that render without an error:
 [`slides/README.md`](slides). Talk abstracts and the post-talk poll templates

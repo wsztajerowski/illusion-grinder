@@ -946,8 +946,7 @@ layout: two-cols
 **Demo repository** <mdi-github class="ico-purple inline-ico" />
 
 ```
-github.com/wsztajerowski/
-   systematic-concurrency-testing
+github.com/wsztajerowski/illusion-grinder
 ```
 
 ::right::
