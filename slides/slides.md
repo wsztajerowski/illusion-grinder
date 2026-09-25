@@ -405,6 +405,56 @@ Run #1000:  a new sample, every iteration
 layout: two-cols
 ---
 
+# Fray's Lifecycle
+
+<div class="slide-subtitle">One <code>mvn test</code> — with an instrumented JDK underneath it.</div>
+
+```mermaid {theme: 'dark', scale: 0.58}
+flowchart TD
+  P["prepare-fray<br/>initialize phase"] --> J["instrumented JDK<br/>target/fray/fray-java · ~190 MB"]
+  J --> M["mvn test → Surefire<br/>flags injected for you"]
+  J --> I["IDE run config<br/>same flags, by hand"]
+  M --> R["@ConcurrencyTest<br/>× 1000 schedules"]
+  I --> R
+  R --> L["console + fray.log"]
+  R --> F["recording · schedule.json<br/>only when it fails"]
+```
+
+::right::
+
+**1 — Maven** <mdi-language-java class="ico-purple inline-ico" />
+
+```bash
+mvn -pl 05-fray -am test
+```
+
+<v-click>
+
+**2 — IDE** <mdi-cursor-default-click class="ico-purple inline-ico" /> `@ExtendWith(FrayTestExtension.class)` makes it an ordinary JUnit test:
+
+```
+JRE: demos/05-fray/target/fray/fray-java
+VM:  -javaagent:…/fray-instrumentation-agent-0.8.5.jar
+     -agentpath:target/fray/fray-jvmti/libjvmti.so
+```
+
+</v-click>
+
+<v-click>
+<div class="callout yellow">
+<mdi-alert class="ico-yellow" />&nbsp;
+Forget them and the test is&nbsp;<strong>skipped, not failed</strong>&nbsp;— the class still reports&nbsp;<strong>green ✔</strong>, and the only trace is <code>Fray is not enabled in this JVM</code>.
+</div>
+</v-click>
+
+<div class="subtle-note">
+<code>target/fray/</code> appears on the first Maven run and survives until <code>clean</code> — the ~190 MB is paid once.
+</div>
+
+---
+layout: two-cols
+---
+
 # What Fray Finds — Unlocked Fast-path
 
 <div class="slide-subtitle">Enter <code>FastPathLamportBuffer</code> </div>
@@ -587,6 +637,52 @@ Both <code>@Actor</code>s run concurrently; the <code>@Arbiter</code> runs&nbsp;
 So <code>1, 0, 0</code> reads: offered, nobody saw it, and it never arrived.
 </div>
 </v-clicks>
+
+---
+layout: two-cols
+---
+
+# jcstress's Lifecycle
+
+<div class="slide-subtitle">An annotation processor writes the runners — then a fat jar you drive yourself.</div>
+
+```mermaid {theme: 'dark', scale: 0.6}
+flowchart TD
+  M["mvn package"] --> J["target/jcstress.jar<br/>runners generated · shaded"]
+  J --> R["java -jar jcstress.jar<br/>-t filter · -m mode"]
+  J -.->|"mvn verify"| E["exec-maven-plugin<br/>integration-test phase"]
+  E --> R
+  R --> H["HTML report<br/>jcstress-results/index.html"]
+```
+
+::right::
+
+**Build, then drive the jar** <mdi-console class="ico-orange inline-ico" />
+
+```bash
+mvn -pl 06-jcstress -am package   # jar only
+mvn -pl 06-jcstress -am verify    # jar + run suite
+
+java -jar target/jcstress.jar -l   # list tests
+java -jar target/jcstress.jar -t FastPath -m quick
+java -jar target/jcstress.jar -t NonVolatile -m stress
+java -jar target/jcstress.jar -c 4 -r target/out
+```
+
+<div class="subtle-note">
+<code>-m sanity|quick|default|tough|stress</code> · <code>-t</code> filter · <code>-c</code> CPUs · <code>-r</code> report dir
+</div>
+
+<v-click>
+<div class="callout orange">
+<mdi-language-html5 class="ico-orange" />&nbsp;
+Output is&nbsp;<strong>HTML only</strong> — a report to read, not something a pipeline can assert on.
+</div>
+</v-click>
+
+<div class="subtle-note">
+<code>-DskipTests</code> does&nbsp;<em>not</em>&nbsp;skip it — the suite runs via <code>exec</code>. Use <code>-Dexec.skip=true</code>.
+</div>
 
 ---
 layout: two-cols
@@ -796,6 +892,50 @@ public class BufferCapacityBenchmark {
 <code>Blackhole</code> stops the JIT deleting "dead" work; warmup and forks stop you measuring a cold JVM.
 Without them you are measuring nothing — and accurate numbers for broken code are worse than no numbers.
 </div>
+
+---
+layout: two-cols
+---
+
+# JMH's Lifecycle
+
+<div class="slide-subtitle">Same two steps as jcstress — build a jar, then run it where the machine is quiet.</div>
+
+```mermaid {theme: 'dark', scale: 0.62}
+flowchart TD
+  M["mvn package"] --> J["target/benchmarks.jar<br/>shaded · org.openjdk.jmh.Main"]
+  J --> R["java -jar benchmarks.jar 'regex'<br/>warmup 5×1s → measure 5×1s → fork"]
+  R --> O["text · csv · scsv · json · latex"]
+```
+
+::right::
+
+**Build, then run it** <mdi-console class="ico-green inline-ico" />
+
+```bash
+mvn -pl 07-jmh -am package
+
+java -jar target/benchmarks.jar   # all — ~10 min
+java -jar target/benchmarks.jar ".*ApplesToApples.*"
+
+# pin one parameter combination
+java -jar target/benchmarks.jar ".*Apples.*" \
+     -p capacity=1024 -p implementation=LOCK
+
+# machine-readable — diffable across commits
+java -jar target/benchmarks.jar -rf json -rff jmh.json
+```
+
+<div class="subtle-note">
+<code>-wi</code> warmups · <code>-i</code> iterations · <code>-f</code> forks · <code>-prof gc</code> · <code>-l</code> list
+</div>
+
+<v-click>
+<div class="callout green">
+<mdi-chart-line class="ico-green" />&nbsp;
+<code>-rf json</code> makes this the one output a pipeline can&nbsp;<strong>diff</strong> — a regression shows up across commits. An HTML report cannot.
+</div>
+</v-click>
 
 ---
 

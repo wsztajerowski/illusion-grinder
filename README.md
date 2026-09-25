@@ -187,6 +187,13 @@ Budget time for this module: `prepare-fray` builds an instrumented ~186 MB JDK
 image into `target/fray/fray-java` on a first run (cached until `clean`), and
 each `@ConcurrencyTest` replays its body 1000 times.
 
+These are plain JUnit 5 tests (`@ExtendWith(FrayTestExtension.class)`), so they
+also run from the IDE — but the run configuration needs the instrumented JDK as
+its JRE *and* the two agents `prepare-fray` normally injects. Miss them and the
+tests are **skipped, not failed**, while the class still reports green
+(`Fray is not enabled in this JVM`). The exact settings are in
+[`demos/05-fray/README.md`](demos/05-fray/README.md#run-it-from-the-ide).
+
 Details: [`demos/05-fray/README.md`](demos/05-fray).
 
 ### III. jcstress — real hardware

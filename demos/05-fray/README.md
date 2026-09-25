@@ -128,6 +128,40 @@ mvn -f demos/pom.xml -pl 05-fray -am test -Dtest='VolatileLamportBufferFrayTest#
 mvn -f demos/pom.xml -pl 05-fray -am test -Dtest=FastPathLamportBufferFrayTest -Dsurefire.failIfNoSpecifiedTests=false
 ```
 
+### Run it from the IDE
+
+`@ExtendWith(FrayTestExtension.class)` sits on the abstract bases, so every Fray
+test here is an ordinary JUnit 5 test and IntelliJ's gutter icon runs it. The run
+configuration just has to reproduce by hand what `prepare-fray` injects into
+Surefire — which is the instrumented JDK **and** two agents, not the JDK alone:
+
+```
+JRE:         demos/05-fray/target/fray/fray-java
+
+VM options:  -javaagent:~/.m2/repository/org/pastalab/fray/instrumentation/fray-instrumentation-agent/0.8.5/fray-instrumentation-agent-0.8.5.jar
+             -agentpath:demos/05-fray/target/fray/fray-jvmti/libjvmti.so
+             -Dfray.workDir=target/fray/fray-report
+```
+
+Run Maven once first — `target/fray/` does not exist until `prepare-fray` has
+built it. (`PrepareFrayMojo` is the source of truth for all three values: it
+appends the two agents to `argLine` and points Surefire's `jvm` at `fray-java`.)
+
+**Get this wrong and nothing tells you.** Without the agents the tests are
+neither run nor failed — they are *skipped*, and the class still reports green:
+
+```
+NonVolatileLamportBufferFrayTest ✔
+  fifoOrderUnderConcurrency() (skipped) ↷ Fray is not enabled in this JVM
+  producerConsumerCompletesWithoutLoss() (skipped) ↷ Fray is not enabled in this JVM
+
+[2 tests found] [2 tests skipped] [0 tests started] [0 tests successful]
+```
+
+With the agents in place the same class reports **2000 tests successful** — two
+methods × 1000 schedules — in about four seconds. A green run with no schedules
+explored looks exactly like a green run with a thousand, so check the count.
+
 ### Expect this to take a while
 
 Fray does not run on a stock JVM. The `prepare-fray` goal (from
@@ -142,8 +176,9 @@ spin loops, which produce long schedules for the scheduler to explore. Budget
 tens of minutes for the full module; use `-Dtest=` to run a single class while
 iterating.
 
-Nothing extra to install — but the module cannot be run outside Maven without
-that setup.
+Nothing extra to install — but nothing runs without that image. Maven wires it
+in for you; outside Maven you wire it in yourself, as in
+[Run it from the IDE](#run-it-from-the-ide) above.
 
 ## System properties
 
